@@ -1,0 +1,70 @@
+id,av_application,av_status,av_name,av_place,av_platform,av_researchareas,geo_goal,geo_sources,geo_tech,geo_inputmode,geo_outputmode,geo_standards,geo_process,geo_processtype,other_process,notes
+001,Turismo,Implementacion-operativo,SpaceBook,Edimburgo (UK),mobile-based,Natural Language Speech AND text-to-speech responses,Visibilidad de lugares de interés desde el punto  de vista del turista (pedestrian) AND guía de rutas AND outdoor navigation guidance,Digital Surface Model based on LIDAR (visibility engine) AND social media geodata AND location (GPS) AND Open Street Map AND Ordenance Survey Master Map,PostgreSQL AND PostGIS AND PgRouting,Voz,Voz,NO,SI,shortest path (procesamiento) AND visibility model (fusion),NA,NA
+004,Navegacion interiores,Implementation-prototipo,NA,NA,device-based AND comercial-based (Alexa),Natural Language Processing,Indoor positioning AND Indoor navigation guidance,NA,NA,Voz,Voz,NO,SI,calculo de rutas,NA,"Miguel: indoor position, almost no detail; Alex: Puedes usar el asistente para moverte y pedir direcciones, pero no parece que usen nada ellos de GIS, simplemente interactúan con Alexa; CARLOS: los autores crea un nuevo Alexa ""skill"" basado en una PI para calcular rutas indoor. He de reconocer que el artículo no explica detalles, y es dificil de entender"
+007,Recomendación restaurantes,Implementacion-prototipo,NA,NA,web-based,Recommender systems AND similarity algorithms,Outdoor positioning,NA,NA,Texto,Texto,NO,SI,nearest POIs (restaurantes) based on user's location,NA,"Miguel: little detail, it does not integrate geographic data, it only uses it"
+008,Guia para Digital Library (information seeking),Implementacion-prototipo,NA,NA,web-based AND comercial-based (Google Assistant),Knowledge graphs AND Linked Open Data AND Natural Language Processing,localización de recursos digitales en bibliotecas,NA,LOSM (LinkedGeoData?) AND Google Maps,Voz AND Texto,Texto AND Visual,NO,SI,nearest resources (and by type) based on the current selection AND calculo de rutas (delegado a Google),NA,"Miguel: mainly digital libraries, but it includes geographic queries"
+010,Educacion (en competencias communicativas) en entornos de construccion,Implementacion-prototipo,NA,"University of Florida, USA",web-based AND agent,coversation agents AND BIM environenmets AND Game engines,immersión espacio-temporal en un entorno BIM,geometrias BIM,NA,Texto AND Visual,Texto AND Visual,NO,NO,NA,NA,"Miguel: building information models, almost no detail"
+011,citizen engagement,Implementacion-prototipo,CitiCafe,"Bangalore, India","web-based AND 
+mobile-based","conversational-agent AND
+Natural Language Processing AND
+Continuous Learning AND
+Proactive Interaction AND
+Intent classifier AND
+crowd sourcing",presentar información relevante y registrar quejas de ubicaciones específicas notificando al usuario de las actualizaciones,NA,NA,Texto,"Kibana dashboard visual AND
+Texto",NO,NO,NA,"Watson Conversacion Service AND
+Conditional Random Field AND
+Fuzzy matching algorithm AND
+Watson Natural Language Understanding tool AND
+Latent Dirichlent Allocation model",NA
+012,"navigation services (guidance, tourism)",Implementacion-prototipo,NA,Taiwan,cloud-based robot,"Artificial Intelligence AND 
+Natural Language Processing","navegación AND
+path planning AND
+location guide AND
+place evaluation
+","location information AND
+waypoint in navigation",NA,"Voz AND
+Visual",Voz,NO,NO,NA,NA,NA
+014,"educación, turismo, entretenimiento",Implementacion-prototipo,NA,"Urbino, Italia",mobile-based,"conversational-agent AND 
+Natural Language Processing",physically locating objects and solving riddles,GPS services with android,NA,Texto AND Visual,"pin points map AND
+QR Codes AND
+Text AND
+Visual",NO,NO,"deep-linking provided by Telegram AND
+sharing geographical locations",NA,"Miguel: geographic information is static, locations are predefined and used, but no information is retrieved ever"
+015,"assistive robot support elder people and people with
+disabilities",Implementacion-prototipo,MIRob,Sri Lanka,robot,"Human-robot interaction AND
+Assistive robotics AND
+Speech recognition AND
+Uncertain term interpretation",identify the spatial relation between objects whithin an environment,spatial data,NA,"Voz AND
+Visual",Voz,NO,NO,"cognitive map AND
+spatial map",NA,Miguel: indoor maps for robots
+016,"assistive robot support elder people and people with
+disabilities",Implementacion-prototipo,PeopleBot,"Albacete, España",robot,"Human-robot interaction AND
+Assistive robotics AND
+Speech recognition AND
+Uncertain term interpretation",finding a particular object trhoughout recognition of objects and their features whithin an indoor environment,NA,NA,"Voz AND
+Visual",Voz,NO,NO,semantic map,NA,Miguel: indoor maps for robots
+018,Turismo,Implementacion-prototipo,NA,NA,Mobile-based,Natural Language Speech AND text-to-speech responses,navegación AND question-answering,GPS and mobile sensors and OSM and LIDAR,NA,Voz,Voz,No,Si,Question-answering server AND city model AND visibility engine,NA,"Miguel: referencia otros artículos con mayor descripción del sistema. Janarthanam, S., Lemon, O., Liu, X., Bartie, P., Mackaness, W., Dalmas, T., Goetze, J.: Integrating location, visibility, and question-answering in a spoken dialogue system for pedestrian city exploration. In: Proc. of SIGDIAL. (2012)"
+020,Narración del tiempo meteorológico para ciegos,Requisitos AND diseño preliminar,NA,NA,NA,Natural Language generation,Acceso a datos,Weather models,NA,NA,Voz,No,Si,Weather models AND data fusion,NA,Es una propuesta. No esta del todo claro que tipo de sw se creará
+021,Visitas guiadas,Implementacion-prototipo,NA,NA,Device-based (Microsoft HoloLens),Mixed reality AND natural-language speech AND conversation agent,Identificación del objeto al que el usuario mira,Anchors provided by Microsoft HoloLens,Microsoft HoloLens,Voz AND visual (gaze position),Voz AND visual,No,No,NA,NA,NA
+024,Visitas guiadas,Implementacion-prototipo,NA,Padula Charterhouse “San Lorenzo” (Italy),device-based (Kinect),Semantic annotation AND natural language speech,Identificacion del objeto al que el usuario mira y Acceso a datos,"LIDAR (interiores, reconstrucción 3D patrimonio)",Getty thesaurus (Linked Open Data) AND OpenDial AND MiVoq,Voz AND visual (gaze position),Voz AND visual,No,Si,Data fusion (LIDAR and Linked Open Data),NA,NA
+025,Generation of indoor maps,Implementacion-prototipo,NA,NA,Device-based (ATRV-JR mobile robot),Modeling of indoor spaces AND natural language description of indoor spaces,Indoor space modeling,LIDAR (interiores),NA,No,Texto,No,No,NA,NA,"Es un robot, pero el articulo se refiere a parte conversacional, la cual puede aplicarse a chatbots. Miguel: el articulo se centra en la evaluacion de la dscripcion generada por el robot, parece que adacripcion del mtod del robot está en Bosse, M., Zlot, R.: Map matching and data association for large-scale two-dimensional laser scan-based SLAM. IJRR 27(6), 667–691 (2008)"
+026,NA,Implementacion-prototipo,NA,"University of Colorado Boulder, USA",NA,natural language processing AND machine learning,"establecer las relaciones espaciales entre los objetos de una escena
+",object relationship graph,NA,NA,NA,NO,NA,NA,NA,NA
+027,Navegación peatones invidentes,Implementacion-prototipo,NA,"Praga, Czech Republic",mobile-based,conversation agent,reverse geocoding AND navegación (aunque es un componente externo: existing navigation system as a service),sidewalk segment network data,propietary GIS,Voz,Voz,NO,SÍ,reverse geocoding,NA,NA
+035,Uso de herramientas GIS (como ArcGIS),Implementacion-prototipo,"CAGA (Conversational Agent for GIS Analysis)
+","Oleander, California",agent,conversation agent,"análisis de datos GIS
+",datos vectoriales (no se especifica si soporta más fuentes),ArcGIS,Voz AND Visual (gestos),Voz AND Visual,NO,Sí,"Se habla de un susbset de las funcionalidades de ArcGIS, sin especificar.  Como mínimo, ""select by location"" (spatial join).",NA,NA
+037,"Personalización de servicios en función de la posición y los datos del usuario. Por ejemplo, proporcionar el check-ín en un aeropuerto.",Diseño,NA,Madrid?,agent,conversation agent AND multi-agent system,indoor positioning,NA,Aruba Positioning System,Voz AND Visual,Voz AND Visual,NO,NO,NA,NA,NA
+038,"Obtener información local (extreme local information), complementado con navegación",Diseño,NA,NA,agent,conversation agent AND multi-agent system,"outdoor positioning AND navegacion
+",NA,NA,Voz,Voz,NO,NO,NA,NA,NA
+039,conversational learning agent,implementacion prototipo,NA,NA,agente,NA,agente de aprendizaje conversacional que ayuda a los usuarios a navegar a través de entornos espaciales complejos y desafiante,NA,NA,voz,voz,no,si,rutas guiadas,NA,NA
+040,asistentes virtuales,NA,Paval,NA,web,inteligencia artificial,to estimate the information need and potential geographic references expressed by the users,NA,NA,texto/voz,texto/voz,NA,NA,NA,NA,"Place-based questions/answers. Se acerca un poco mas al ópico de la revisión que otros articulos enfocados en ""spatial descriptions"" (left, right, etc) en el lenguaje."
+041,sistemas de busqueda conversational y sistemas de asistencia in situ,patrones de diseño,NA,NA,web,NA,patrones estructurales de las preguntas relacionadas con el lugar y sus respuestas generadas por humanos utilizando el conjunto de datos MS MARCO V2.1,NA,NA,NA,NA,no,si,to identify places matching some criteria,NA,NA
+043,sistemas conversasionales para lenguas indias,Implementation-prototipo,NA,NA,NA,"Named Entity Recognition, Neural Network and linear models
+ like Naive Bayes and SVM.modelos lineales como Naive Bayes y SVM, y también una simple red neuronal",identification and classification of every word,NA,NA,texto,texto,no,no,NA,NA,"NER - reconocimiento de lugares/location en texto no estructurado. Similar a ""040""?"
+044,Personal Digital  Assistants,implementation,NA,NA,web-based (cortana),inteligencia artificial,to extract queries with location and business entities,NA,NA,voz - texto,voz -texto,NA,NA,NA,NA,NA
+045,turismo,implementation-prototipo,TITERIA,"Teruel, Spain",agent (kiosk),embodied conversation agents AND ontologies AND animation engine AND affective computing AND speech recognisition,Regiones de interes organizan conocimiento AND localizacion de POIs,Regiones de interes AND POIs para turismo,NA,texto AND voz AND visual,texto AND voz AND visual,NO,NO,NA,NA,Experimneto en Smart Tourists Information Points (fijos). Creo qeu puede ser extrapolable a chatbots/AV
+046,"Reconocimiento automático de texto para entidades ""lugar""",implementation-prototipo,NA,NA,others,Named Entity Recognition AND Entity Relation AND Neural machine translation AND Deep learning,Reconocimiento de lugares en texto no estructurado,NA,NA,texto,texto,NO,NO,NA,NA,"Lo que se decida para ""043"", lo mismo para ""046"""
+047,turismo,implementation-prototipo,Trip 4 All,"University of Aveiro, Portugal",agent AND mobile-based,gamification AND Natural Language Processing,Experiencia multimedia y personalizada sobre lugares que se visitan,location (GPS) AND mapas AND POIs,Georeferenced Gamifying Platform,voz AND mapas AND visual,voz AND mapas AND visual,NO,SI,geotrigering (proximidad a puntos de interes),NA,NA
+048,"Reconomiento automatico del habla para entidades ""lugar""",implementation-prototipo,NA,NA,mobile-based AND comercial-based (Cortana),Knowledge graphs AND Speech recognition AND Entity relation,reconocimiento de lugares en dialectos AND regiones de interes organizan conocimiento,Regiones de interes,NA,voz,texto,NO,NO,NA,NA,"Otro de NER- Lo que se decida para ""043"" y ""046"", tambien para este"
+101,water-related disaster management,implementation-prototipo,Diana,Taiwan,mobile-based AND comercial-based (LINE),knowledge graphs AND Fuzzy search algorithms,mapas georeferenciados con capas de información relevante,datos meteorologicos,NA,texto AND visual,texto AND mapas,NO,NO,mapas preprocesados de antemano segun palabras claves,NA,checking reference lists
