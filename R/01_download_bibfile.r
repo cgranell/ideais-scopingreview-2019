@@ -36,8 +36,8 @@ papers2010_2019 <-
   arrange(year)
 
 
-data_path <- here::here("data", "papers2009_2019.csv")
+data_path <- here::here("data", "papers2010_2019.csv")
 write_csv(papers2010_2019, data_path)
-data_path <- here::here("data", "papers2009_2019.rda")
+data_path <- here::here("data", "papers2010_2019.rda")
 saveRDS(papers2010_2019, data_path)
 
