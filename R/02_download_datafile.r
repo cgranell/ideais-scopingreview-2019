@@ -15,10 +15,10 @@ gdata_path <- drive_get(as_id(gdata_url))
 gdata_file <- drive_ls(path = gdata_path$name, pattern = data_file_name, type = "spreadsheet")
 
 data_path <- here::here("data-raw", gdata_file$name) # local file
-# export Google Sheets to the default type: an Excel workbook
-drive_download(file = as_id(gdata_file$id), path = data_path, overwrite = TRUE, verbose = TRUE)
+drive_download(file = as_id(gdata_file$id), path = data_path, overwrite = TRUE, verbose = TRUE, type = "xlsx")
 drive_deauth()
 
+# AS  Google Sheets are exported by default as an Excel workbook, add file extensio to the path
 data_path <- paste0(data_path, ".xlsx")
 data_raw <- read_excel(data_path, skip = 1, na = c("NA",""))
 
@@ -32,15 +32,13 @@ data_raw$id <- stringr::str_pad(data_raw$id, 3, pad = "0")
 
 # Select the most relevant colums now, drop the others
 sel_cols <- c("id", 
-              "av_aplicacion", "av_estado", "av_nombre", "av_lugar", "av_plataforma", "av_areas_investigacion",
+              "av_aplicacion", "av_estado", "av_nombre", "av_lugar", "av_arquitectura", "av_plataforma", "av_areas_investigacion",
               "geo_propósito", "geo_fuentes", "geo_tecnología", "geo_entrada", "geo_salida", "geo_estándares", 
               "geo_procesamiento", "geo_procesamiento_tipo", "procesamientonogeo",
               "notas")
 
 # av_: groups variables related to 'virtual assisstats'
-# geo__: groups variables related to use of geo
-
-
+# geo_: groups variables related to use of geo
 dataitems2010_2019 <-
   data_raw  %>%
   select(sel_cols) %>%
@@ -49,6 +47,7 @@ dataitems2010_2019 <-
          av_status = av_estado,
          av_name = av_nombre,
          av_place = av_lugar,
+         av_arch = av_arquitectura,
          av_platform = av_plataforma,
          av_researchareas = av_areas_investigacion,
          geo_goal = `geo_propósito`,
@@ -62,10 +61,33 @@ dataitems2010_2019 <-
          other_process = procesamientonogeo,
          notes = notas)
 
-#TODO: clean variables
+# load(file = here("data", "data_av1.rda"))
+
+# Tidy up "av" variables
+data_av1 <- 
+  dataitems2010_2019 %>%
+  select(id, av_application, av_status, av_arch, av_platform)
+
+sel_cols_av <- c("av_application", "av_status", "av_arch", "av_platform")
+data_av1[sel_cols_av] <- lapply(data_av1[sel_cols_av], FUN = function(x) stringr::str_to_upper(x))
+data_av1$av_status <- factor(data_av1$av_status) 
+data_av1$av_arch <- factor(data_av1$av_arch)
+
+data_av2 <- 
+  dataitems2010_2019 %>%
+  select(id, av_researchareas)
+
+data_av2 <- separate_rows(data_av2, av_researchareas, sep="AND")
+data_av2$av_researchareas <- stringr::str_trim(data_av2$av_researchareas)
+data_av2$av_researchareas <- stringr::str_to_upper(data_av2$av_researchareas)
+data_av2$av_researchareas <- factor(data_av2$av_researchareas)
 
 
-data_path <- here::here("data", "dataitems2009_2019.csv")
-write_csv(dataitems2010_2019, data_path)
-data_path <- here::here("data", "dataitems2009_2019.rda")
-saveRDS(dataitems2010_2019, data_path)
+# data_path <- here::here("data", "data_av1.csv")
+# write_csv(data_av1, data_path)
+data_path <- here::here("data", "data_av1.rda")
+saveRDS(data_av1, data_path)
+# data_path <- here::here("data", "data_av2.csv")
+# write_csv(data_av2, data_path)
+data_path <- here::here("data", "data_av2.rda")
+saveRDS(data_av2, data_path)
