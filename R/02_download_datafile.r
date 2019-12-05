@@ -18,7 +18,7 @@ data_path <- here::here("data-raw", gdata_file$name) # local file
 drive_download(file = as_id(gdata_file$id), path = data_path, overwrite = TRUE, verbose = TRUE, type = "xlsx")
 drive_deauth()
 
-# AS  Google Sheets are exported by default as an Excel workbook, add file extensio to the path
+# As  Google Sheets are exported by default as an Excel workbook, add file extension to the path
 data_path <- paste0(data_path, ".xlsx")
 data_raw <- read_excel(data_path, skip = 1, na = c("NA",""))
 
@@ -61,7 +61,7 @@ dataitems2010_2019 <-
          other_process = procesamientonogeo,
          notes = notas)
 
-# load(file = here("data", "data_av1.rda"))
+
 
 # Tidy up "av" variables
 data_av1 <- 
@@ -83,6 +83,21 @@ data_av2$av_researchareas <- stringr::str_to_upper(data_av2$av_researchareas)
 data_av2$av_researchareas <- factor(data_av2$av_researchareas)
 
 
+# Tidy up "geo" variables
+data_geo <- 
+  dataitems2010_2019 %>%
+  select(id, starts_with("geo"))
+
+sel_cols_geo <- colnames(data_geo)
+data_geo[sel_cols_geo] <- lapply(data_geo[sel_cols_geo], FUN = function(x) stringr::str_trim(x))
+
+sel_cols_geo <- c("geo_inputmode", "geo_outputmode", "geo_standards", "geo_process")
+data_geo[sel_cols_geo] <- lapply(data_geo[sel_cols_geo], FUN = function(x) stringr::str_to_upper(x))
+
+data_geo$geo_standards <- factor(data_geo$geo_standards)
+data_geo$geo_process <- factor(stringr::str_to_upper(data_geo$geo_process))
+
+
 # data_path <- here::here("data", "data_av1.csv")
 # write_csv(data_av1, data_path)
 data_path <- here::here("data", "data_av1.rda")
@@ -91,3 +106,7 @@ saveRDS(data_av1, data_path)
 # write_csv(data_av2, data_path)
 data_path <- here::here("data", "data_av2.rda")
 saveRDS(data_av2, data_path)
+# data_path <- here::here("data", "data_geo.csv")
+# write_csv(data_geo, data_path)
+data_path <- here::here("data", "data_geo.rda")
+saveRDS(data_geo, data_path)
