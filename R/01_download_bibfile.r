@@ -1,4 +1,4 @@
-# Donwloads and transform a bibtext file into a tidy dataset
+# Downloads and transform a bibtext file into a tidy dataset
 
 #install.packages(c("here", "RefManageR", "tidyverse", "googledrive"))
 library(here)
