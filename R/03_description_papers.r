@@ -15,7 +15,7 @@ papers <-
 n_papers <- nrow(papers)
 
 
-# Distribution of studies: journal vs conference
+## Distribution of studies: journal vs conference
 papers %>%
   mutate(type = ifelse(type=="Book", "Artículo en conferencia", type),
          type = ifelse(type=="InProceedings", "Artículo en conferencia", type),
@@ -30,12 +30,11 @@ papers %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
-# Temporal distribution of studies 
-
+## Temporal distribution of studies 
 
 # In case a year has no studies, add that year to the series. 
 # Input parameter 'n': number of studies for a missed year
-add_missing_years <-function(n) {
+add_missing_years <- function(n) {
   years_papers <- unique(papers$year)
   years_gap <- setdiff(seq(2010,2020,by=1), years_papers)
   years_tibble <- tibble(year = integer(), n = integer())
@@ -68,7 +67,7 @@ papers %>%
 ggsave(here("figs", "fig02.png"))
 
 
-# Temporal distribution of studies according to av_status
+## Temporal distribution of studies according to av_status
 papers %>%
   group_by(av_status) %>% 
   summarise(n = n()) %>%
@@ -105,5 +104,59 @@ papers %>%
 
 ggsave(here("figs", "fig03.png"))
 
+## application vs arch vs year
+
+papers %>%
+  arrange(desc(year)) %>%
+  select(ID = id,
+        `Año` = year,
+        `Aplicación` = av_application,
+        `Arquitectura` = av_arch) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 
+# scatterplot
+library(ggrepel)
+papers %>%
+  select(year, av_arch, av_status) %>%
+  group_by(year, av_arch, av_status) %>%
+  summarise(n = n()) %>%
+  ggplot(aes(x=year, y=av_arch, color=av_status)) +
+  geom_point(aes(size=n*4),  alpha=.5, na.rm = TRUE) +
+  geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE) +
+  scale_x_continuous(breaks = seq(2010,2020, by=1)) +
+  scale_size_area(max_size=12) +
+  labs(title="Distribución temporal de los estudios \nsegún la aproximación técnica",
+       x="Año", 
+       y="Aproximación técnica") +
+  # Which legend to show
+  guides(color="legend",size = "none") +
+  # guides(color=guide_legend(title="Estado desarrollo", nrow=4))+ 
+  theme_minimal() + 
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.background = element_blank()) +
+  theme(legend.title = element_text(size=9),
+        legend.position = "bottom")
+
+ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
+
+# 
+# library(DT)
+# 
+# # Table output with DT
+# papers %>%
+#   arrange(desc(year)) %>%
+#   select(ID = id,
+#          `Año` = year,
+#          `Aplicación` = av_application,
+#          `Arquitectura` = av_arch) %>%
+#     datatable(rownames = FALSE,
+#             filter = "top",
+#             class = "table-bordered table-condensed hover",
+#             extensions = c("Buttons"),
+#             options = list(
+#                pageLength = 5, #autoWidth = TRUE,
+#                dom = 'Blfrtip',  # https://datatables.net/reference/option/dom
+#                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+#             ))  
