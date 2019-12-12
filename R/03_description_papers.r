@@ -131,8 +131,8 @@ papers %>%
        x="Año", 
        y="Aproximación técnica") +
   # Which legend to show
-  guides(color="legend",size = "none") +
-  # guides(color=guide_legend(title="Estado desarrollo", nrow=4))+ 
+  guides(color="legend",size = "none", label="none") +
+  guides(color=guide_legend(title="Estado desarrollo", nrow=4))+ 
   theme_minimal() + 
   theme(panel.grid.minor = element_blank()) +
   theme(panel.background = element_blank()) +
