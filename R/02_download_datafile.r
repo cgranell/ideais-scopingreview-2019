@@ -66,7 +66,7 @@ dataitems2010_2019 <-
 # Tidy up "av" variables
 data_av1 <- 
   dataitems2010_2019 %>%
-  select(id, av_application, av_status, av_arch, av_platform)
+  select(id, av_name, av_place, av_application, av_status, av_arch, av_platform)
 
 sel_cols_av <- c("av_application", "av_status", "av_arch", "av_platform")
 data_av1[sel_cols_av] <- lapply(data_av1[sel_cols_av], FUN = function(x) stringr::str_to_upper(x))
