@@ -18,7 +18,7 @@ papers <-
 
 n_papers <- nrow(papers)
 
-#### AV EDA 
+#### Results - Section 3.1 
 ## Distribution of studies: journal vs conference
 papers %>%
   mutate(type = ifelse(type=="Book", "Artículo en conferencia", type),
@@ -70,6 +70,13 @@ papers %>%
 
 ggsave(here("figs", "fig02.png"))
 
+
+## Words cloud
+
+
+
+
+## Results - Section 3.2 
 
 ## Temporal distribution of studies according to av_status
 papers %>%

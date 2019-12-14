@@ -1,0 +1,242 @@
+---
+title: 'IDEAIS: Analisis de las documentos elegibles de la sintesis'
+author: "Carlos Granell et al."
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+urlcolor: blue    
+---
+
+
+## Metadata
+
+Required libraries and runtime environment description.
+
+```{r load_libraries, echo=TRUE, message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+library(tidytext)
+library(stringr)
+library(kableExtra)
+library(wordcloud)
+
+```
+
+
+```{r session_info, echo=FALSE}
+devtools::session_info(include_base = TRUE)
+```
+
+## Data 
+
+The data for the analysis is in the *ipapers2018* dataset that has `` `r nrow(ipapers2018)` `` references.
+
+```{r data_source, echo=FALSE}
+papers <- readRDS(file = here("data", "papers2010_2019.rda"))
+
+n_papers <- nrow(papers)
+```
+
+There are `r n_papers ` references.
+
+
+
+## Distribution of studies: journal vs conference
+
+```{r}
+
+papers %>%
+  mutate(type = ifelse(type=="Book", "Artículo en conferencia", type),
+         type = ifelse(type=="InProceedings", "Artículo en conferencia", type),
+         type = ifelse(type=="Article", "Artículo en revista", type)) %>%
+  group_by(type) %>% 
+  summarise(n = n()) %>%
+  mutate(proportion  = n / n_papers, 
+         proportion_lbl = paste0(round(proportion*100,0), "%")) %>%
+  select(`Tipo de documento` = type,
+         `N` = n,
+         `%`= proportion_lbl) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+```
+
+## Temporal distribution of studies 
+
+```{r}
+# In case a year has no studies, add that year to the series. 
+# Input parameter 'n': number of studies for a missed year
+add_missing_years <- function(n) {
+  years_papers <- unique(papers$year)
+  years_gap <- setdiff(seq(2010,2020,by=1), years_papers)
+  years_tibble <- tibble(year = integer(), n = integer())
+  if (length(years_gap) > 0) {
+    for (year in years_gap) {
+      years_tibble <- add_row(years_tibble, year=year, n=n)
+    }
+  }
+  return(years_tibble);
+}
+
+papers %>%
+  group_by(year) %>% 
+  summarise(n = n()) %>%
+  bind_rows(add_missing_years(0)) %>%
+  arrange(year) %>%
+  ggplot(aes(x=year, y=n)) +
+  geom_line(size=2, alpha=.4) +
+  labs(title="Distribución temporal de los estudios", 
+    x="Año", 
+    y="# de estudios", 
+    caption="Fuente: autores") +
+  scale_y_continuous(breaks=seq(0,10,by=1)) +
+  scale_x_continuous(breaks=seq(2010,2020,by=1)) +
+  theme_minimal() +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.background = element_blank())
+
+ggsave(here("figs", "fig02.png"))
+
+```
+
+
+## Terms frequency analysis 
+
+As part of the text analysis of papers, including wordcloud and terms frequency analysis,
+read the full list of abstracts from the `papers` and process them to
+create a [tidy](https://www.jstatsoft.org/article/view/v059i10) data structure without
+[stop words](https://en.wikipedia.org/wiki/Stop_words).
+Reference book to text mining in tidy format: [Text Mining with R](https://www.tidytextmining.com/)
+
+```{r stopwords_abstract, echo=FALSE}
+tidy_abstracts <- papers %>%
+  select(id, abstract) %>%
+  arrange(id)
+  
+papers_words <- tidy_abstracts %>%
+    select(id, abstract) %>%
+    unnest_tokens(word, abstract)
+my_stop_words <- tibble(
+  word = c(
+    "et",
+    "al",
+    "fig",
+    "e.g.",
+    "i.e.",
+    "eu",
+    "http",
+    "ing",
+    "pp",
+    "figure",
+    "based",
+    "â",
+    "background", # used to structure an abstract
+    "objective",
+    "methods",
+    "results",
+    "conclusions",
+    "authors"
+    ),
+  lexicon = "ideais")
+
+all_stop_words <- stop_words %>%
+  bind_rows(my_stop_words)
+
+# Get rid of numeric values (as words) from abstracts
+suppressWarnings({
+  no_numbers <- papers_words %>%
+    filter(is.na(as.numeric(word)))
+})
+
+# Get list of words from abstracts without stopwords 
+no_stop_words <- no_numbers %>%
+  anti_join(all_stop_words, by = "word") 
+```
+
+```{r calculate_stopword_stats, echo=FALSE}
+total_words = nrow(papers_words)
+after_cleanup = nrow(no_stop_words)
+```
+
+About `r round(after_cleanup/total_words * 100)` % (`r after_cleanup`) of the total words (`r total_words`) are considered stop words.
+
+_How many non-stop words does each abstract have?_
+
+```{r non_stopwords_abstract, echo=FALSE}
+non_stop_words_per_abstract <- no_stop_words %>%
+  group_by(id) %>%
+  summarise(num_words = n()) %>%
+  left_join(papers, by=c("id")) %>%
+  select(id, filename, num_words, year) %>%
+  arrange(desc(num_words))
+non_stop_words_per_abstract$id <- factor(non_stop_words_per_abstract$id, 
+                                         levels = non_stop_words_per_abstract$id[order(non_stop_words_per_abstract$num_words)])
+```
+
+```{r echo=FALSE}
+ggplot(slice(non_stop_words_per_abstract, 1:40), aes(id, num_words, fill=year)) + 
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "# words", title="Top40 abstracts by # words, by year") +
+  facet_wrap(~year, ncol = 2, scales = "free")+
+  coord_flip() 
+
+kable(slice(non_stop_words_per_abstract, 1:20),
+  caption = "Top20 abstracts ordered by # words after deleting stopwords.", 
+  format = "html", booktabs = TRUE)
+```
+
+
+## Word Cloud 
+
+
+```{r top_words, echo=FALSE}
+countPapersUsingWord <- function(the_word) {
+  sapply(the_word, function(w) {
+    no_stop_words %>%
+      filter(word == w) %>%
+      group_by(id) %>%
+      count %>%
+      nrow
+  })
+}
+
+# top25 words
+no_top_words <- 25
+top_words <- no_stop_words %>%
+  group_by(word) %>%
+  tally %>%
+  arrange(desc(n)) %>%
+  head(no_top_words) %>%
+  mutate(`# abstracts` = countPapersUsingWord(word)) %>%
+  add_column(place = c(1:nrow(.)), .before = 0)
+```
+
+_Word cloud of `r no_top_words` top words in abstracts_ 
+
+```{r Fig_Word_cloud,dpi=600,fig.width=8,fig.asp=0.85, echo=FALSE}
+set.seed(1)
+if (max(top_words$n) < 100) {
+  minimum_occurence <- round(mean(top_words$n))
+} else {
+  minimum_occurence <-  min(top_words$n) # Or arbritary number like 100 
+}
+cloud_words <- no_stop_words %>%
+  group_by(word) %>%
+  tally %>%
+  filter(n >= minimum_occurence) %>% 
+  arrange(desc(n))
+if (nrow(cloud_words) > 0) {  
+  plot.new()
+  wordcloud(cloud_words$word, cloud_words$n,
+            max.words = Inf,
+            random.order = FALSE,
+            fixed.asp = FALSE,
+            rot.per = 0,
+            #color = brewer.pal(8,"Dark2"))
+            color = brewer.pal(9,"BuGn"))
+} else {
+  warning("No input data for wordcloud.")
+}
+```
