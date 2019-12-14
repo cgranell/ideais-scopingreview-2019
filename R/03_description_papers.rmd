@@ -1,12 +1,14 @@
 ---
 title: 'IDEAIS: Analisis de las documentos elegibles de la sintesis'
-author: "Carlos Granell et al."
+author: "Carlos Granell, Paola Pesántez et al."
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
     df_print: paged
     toc: yes
-urlcolor: blue    
+  word_document:
+    toc: yes
+urlcolor: blue
 ---
 
 ## Required libraries
@@ -36,7 +38,7 @@ There are `r n_papers ` references.
 
 ## Distribution of studies: journal vs conference
 
-```{r}
+```{r echo=FALSE}
 
 papers %>%
   mutate(type = ifelse(type=="Book", "Artículo en conferencia", type),
@@ -56,7 +58,7 @@ papers %>%
 
 ## Temporal distribution of studies 
 
-```{r}
+```{r echo=FALSE}
 # In case a year has no studies, add that year to the series. 
 # Input parameter 'n': number of studies for a missed year
 add_missing_years <- function(n) {
@@ -179,11 +181,11 @@ non_stop_words_per_abstract %>%
 ```
 
 ```{r echo=FALSE}
-ggplot(slice(non_stop_words_per_abstract, 1:30), aes(id, num_words, fill=year)) + 
-  geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "# de palabras", title="Top20 resúmenes por año y por # de palabras significativas") +
-  facet_wrap(~year, ncol = 2, scales = "free")+
-  coord_flip() 
+# ggplot(non_stop_words_per_abstract, aes(id, num_words, fill=year)) + 
+#   geom_col(show.legend = FALSE) +
+#   labs(x = NULL, y = "# de palabras", title="Resúmenes por año y por # de palabras significativas") +
+#   facet_wrap(~year, ncol = 2, scales = "free")+
+#   coord_flip() 
 
 
 ```
@@ -195,7 +197,7 @@ ggplot(slice(non_stop_words_per_abstract, 1:30), aes(id, num_words, fill=year)) 
 ```{r top_words, echo=FALSE}
 countPapersUsingWord <- function(the_word) {
   sapply(the_word, function(w) {
-    no_stop_words %>%
+    non_stop_words %>%
       filter(word == w) %>%
       group_by(id) %>%
       count %>%
@@ -204,7 +206,7 @@ countPapersUsingWord <- function(the_word) {
 }
 
 # top words
-no_top_words <- 32
+no_top_words <- 40  # Arbitrary  
 top_words <- non_stop_words %>%
   group_by(word) %>%
   tally %>%
@@ -217,38 +219,38 @@ top_words %>%
          Repeticiones = n,
          `# resúmenes` = n_abstracts) %>%
   arrange(desc(Repeticiones), desc(`# resúmenes`)) %>%
-  knitr::kable(caption = "Ranking detérminos más repetidos (si igual # repeticiones, ordenados por mayor # de resumenes)",
+  knitr::kable(caption = paste0("Ranking de los ", no_top_words," términos más repetidos\n (si igual # repeticiones, ordenados por mayor # de resumenes)"),
                format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-_Word cloud of `r no_top_words` top words in abstracts_ 
 
-```{r Fig_Word_cloud,dpi=600,fig.width=8,fig.asp=0.85, echo=FALSE}
+```{r echo=FALSE}
 set.seed(1)
-if (max(top_words$n) < 100) {
-  minimum_occurence <- round(mean(top_words$n))
-} else {
-  minimum_occurence <-  min(top_words$n) # Or arbritary number like 100 
-}
 
 minimum_occurence <- 10
-cloud_words <- no_stop_words %>%
+
+cloud_words <- non_stop_words %>%
   group_by(word) %>%
   tally %>%
   filter(n >= minimum_occurence) %>% 
   arrange(desc(n))
+```
+
+_Word cloud of `r nrow(cloud_words)` top words in abstracts_ 
+
+
+```{r echo=FALSE}
+
 if (nrow(cloud_words) > 0) {  
   plot.new()
-  p <- wordcloud(cloud_words$word, cloud_words$n,
+  wordcloud(cloud_words$word, cloud_words$n,
             max.words = Inf,
             random.order = FALSE,
             fixed.asp = FALSE,
             rot.per = 0,
             color = brewer.pal(8,"Dark2"))
-            #color = brewer.pal(9,"BuGn"))
-  
-  #TODO: Save word cloudn into an image file
+  #TODO: Save plot in a file
 } else {
   warning("No input data for wordcloud.")
 }
