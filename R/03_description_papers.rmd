@@ -9,10 +9,7 @@ output:
 urlcolor: blue    
 ---
 
-
-## Metadata
-
-Required libraries and runtime environment description.
+## Required libraries
 
 ```{r load_libraries, echo=TRUE, message=FALSE, warning=FALSE}
 library(here)
@@ -25,13 +22,7 @@ library(wordcloud)
 ```
 
 
-```{r session_info, echo=FALSE}
-devtools::session_info(include_base = TRUE)
-```
-
 ## Data 
-
-The data for the analysis is in the *ipapers2018* dataset that has `` `r nrow(ipapers2018)` `` references.
 
 ```{r data_source, echo=FALSE}
 papers <- readRDS(file = here("data", "papers2010_2019.rda"))
@@ -118,6 +109,7 @@ tidy_abstracts <- papers %>%
 papers_words <- tidy_abstracts %>%
     select(id, abstract) %>%
     unnest_tokens(word, abstract)
+
 my_stop_words <- tibble(
   word = c(
     "et",
@@ -139,7 +131,7 @@ my_stop_words <- tibble(
     "conclusions",
     "authors"
     ),
-  lexicon = "ideais")
+  lexicon = "IDEAIS")
 
 all_stop_words <- stop_words %>%
   bind_rows(my_stop_words)
@@ -150,41 +142,50 @@ suppressWarnings({
     filter(is.na(as.numeric(word)))
 })
 
+
 # Get list of words from abstracts without stopwords 
-no_stop_words <- no_numbers %>%
-  anti_join(all_stop_words, by = "word") 
+non_stop_words <- no_numbers %>%
+  anti_join(all_stop_words, by = "word")
+          
+
 ```
 
 ```{r calculate_stopword_stats, echo=FALSE}
 total_words = nrow(papers_words)
-after_cleanup = nrow(no_stop_words)
+after_cleanup = nrow(non_stop_words)
 ```
 
-About `r round(after_cleanup/total_words * 100)` % (`r after_cleanup`) of the total words (`r total_words`) are considered stop words.
+About `r round(after_cleanup/total_words * 100)` % (`r after_cleanup`) of the total words (`r total_words`) in all abstracts are considered non stop words.
 
 _How many non-stop words does each abstract have?_
 
 ```{r non_stopwords_abstract, echo=FALSE}
-non_stop_words_per_abstract <- no_stop_words %>%
+non_stop_words_per_abstract <- non_stop_words %>%
   group_by(id) %>%
   summarise(num_words = n()) %>%
   left_join(papers, by=c("id")) %>%
-  select(id, filename, num_words, year) %>%
+  select(id, num_words, year) %>%
   arrange(desc(num_words))
-non_stop_words_per_abstract$id <- factor(non_stop_words_per_abstract$id, 
-                                         levels = non_stop_words_per_abstract$id[order(non_stop_words_per_abstract$num_words)])
+
+non_stop_words_per_abstract$id <- 
+  factor(non_stop_words_per_abstract$id,
+         levels = non_stop_words_per_abstract$id[order(non_stop_words_per_abstract$num_words)])
+
+non_stop_words_per_abstract %>%
+  slice(1:10) %>%
+  knitr::kable(caption = "Top10 resúmenes por # de palabras significativas después de suprimir stopwords.",
+               format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 ```{r echo=FALSE}
-ggplot(slice(non_stop_words_per_abstract, 1:40), aes(id, num_words, fill=year)) + 
+ggplot(slice(non_stop_words_per_abstract, 1:30), aes(id, num_words, fill=year)) + 
   geom_col(show.legend = FALSE) +
-  labs(x = NULL, y = "# words", title="Top40 abstracts by # words, by year") +
+  labs(x = NULL, y = "# de palabras", title="Top20 resúmenes por año y por # de palabras significativas") +
   facet_wrap(~year, ncol = 2, scales = "free")+
   coord_flip() 
 
-kable(slice(non_stop_words_per_abstract, 1:20),
-  caption = "Top20 abstracts ordered by # words after deleting stopwords.", 
-  format = "html", booktabs = TRUE)
+
 ```
 
 
@@ -202,15 +203,23 @@ countPapersUsingWord <- function(the_word) {
   })
 }
 
-# top25 words
-no_top_words <- 25
-top_words <- no_stop_words %>%
+# top words
+no_top_words <- 32
+top_words <- non_stop_words %>%
   group_by(word) %>%
   tally %>%
   arrange(desc(n)) %>%
   head(no_top_words) %>%
-  mutate(`# abstracts` = countPapersUsingWord(word)) %>%
-  add_column(place = c(1:nrow(.)), .before = 0)
+  mutate(n_abstracts = countPapersUsingWord(word))
+
+top_words %>%
+  select(Palabra = word,
+         Repeticiones = n,
+         `# resúmenes` = n_abstracts) %>%
+  arrange(desc(Repeticiones), desc(`# resúmenes`)) %>%
+  knitr::kable(caption = "Ranking detérminos más repetidos (si igual # repeticiones, ordenados por mayor # de resumenes)",
+               format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
 _Word cloud of `r no_top_words` top words in abstracts_ 
@@ -222,6 +231,8 @@ if (max(top_words$n) < 100) {
 } else {
   minimum_occurence <-  min(top_words$n) # Or arbritary number like 100 
 }
+
+minimum_occurence <- 10
 cloud_words <- no_stop_words %>%
   group_by(word) %>%
   tally %>%
@@ -229,14 +240,23 @@ cloud_words <- no_stop_words %>%
   arrange(desc(n))
 if (nrow(cloud_words) > 0) {  
   plot.new()
-  wordcloud(cloud_words$word, cloud_words$n,
+  p <- wordcloud(cloud_words$word, cloud_words$n,
             max.words = Inf,
             random.order = FALSE,
             fixed.asp = FALSE,
             rot.per = 0,
-            #color = brewer.pal(8,"Dark2"))
-            color = brewer.pal(9,"BuGn"))
+            color = brewer.pal(8,"Dark2"))
+            #color = brewer.pal(9,"BuGn"))
+  
+  #TODO: Save word cloudn into an image file
 } else {
   warning("No input data for wordcloud.")
 }
+```
+
+## Runtime environment description
+
+
+```{r session_info, echo=FALSE}
+devtools::session_info(include_base = TRUE)
 ```
