@@ -3,9 +3,13 @@
 library(here)
 library(tidyverse)
 library(kableExtra)
+library(DT)
+library(ggrepel)
 
 papers2010_2019 <- readRDS(file = here("data", "papers2010_2019.rda"))
 data_av1 <- readRDS(file = here("data", "data_av1.rda"))
+data_av2 <- readRDS(file = here("data", "data_av2.rda"))
+data_geo <- readRDS(file = here("data", "data_geo.rda"))
 
 papers <- 
   papers2010_2019 %>% 
@@ -14,7 +18,7 @@ papers <-
 
 n_papers <- nrow(papers)
 
-
+#### AV EDA 
 ## Distribution of studies: journal vs conference
 papers %>%
   mutate(type = ifelse(type=="Book", "Artículo en conferencia", type),
@@ -104,17 +108,7 @@ papers %>%
 
 ggsave(here("figs", "fig03.png"))
 
-## application vs arch vs year
-
-papers %>%
-  arrange(desc(year)) %>%
-  select(ID = id,
-        `Año` = year,
-        `Aplicación` = av_application,
-        `Arquitectura` = av_arch) %>%
-  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
+## Distribution of studied considerign av_arch vs av_status over time 
 
 # scatterplot
 library(ggrepel)
@@ -141,8 +135,55 @@ papers %>%
 
 ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
 
+
+## AV names 
+names <- 
+  papers %>%
+  select(av_name, year, av_application) %>%
+  filter(!is.na(av_name))
+
+paste0("Asistentes virtual con nombre ", round(nrow(names)/n_papers*100,0), "%")
+
+
+## Add geo variables  
+papers <- 
+  papers2010_2019 %>% 
+  inner_join(data_av1, by="id") %>%
+  inner_join(data_geo, by="id") %>%
+  arrange(id)
+
+n_papers <- length(unique(papers$id))
+
+## Application domains and geo_goals
+papers %>%
+  select(ID = id,
+         `Año` = year,
+         `Aplicaciones` = av_application,
+         `Proposito geo` = geo_goal ) %>%
+  arrange(desc(`Año`)) %>%
+  datatable(rownames = FALSE,
+            filter = "top",
+            class = "table-bordered table-condensed hover",
+            extensions = c("Buttons"),
+            options = list(
+              pageLength = 5, #autoWidth = TRUE,
+              dom = 'Blfrtip',  # https://datatables.net/reference/option/dom
+              buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+            )
+  )
+
+
+# Platforms
+papers %>%
+  select(id, year, av_platform, av_arch) %>%
+  filter(!is.na(av_platform)) %>%
+  arrange(desc(year))
+         
+
+
+
 # 
-# library(DT)
+# 
 # 
 # # Table output with DT
 # papers %>%
@@ -160,3 +201,12 @@ ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
 #                dom = 'Blfrtip',  # https://datatables.net/reference/option/dom
 #                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
 #             ))  
+
+
+
+
+
+
+#### GEO EDA
+
+
