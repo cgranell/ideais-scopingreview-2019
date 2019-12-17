@@ -256,6 +256,60 @@ if (nrow(cloud_words) > 0) {
 }
 ```
 
+_Word cloud of keywords_
+
+
+```{r}
+
+keywords <-
+  select(papers, id, keyword=keywords) %>%
+  separate_rows(keyword, sep=",") %>%
+  drop_na(keyword) %>%
+  mutate(keyword = stringr::str_to_lower(stringr::str_trim(keyword))) 
+
+no_top_keywords <- nrow(cloud_words) # Same number as the top words in abstract 
+no_top_keywords <- 32
+
+countPapersUsingKeyword <- function(the_word) {
+  sapply(the_word, function(w) {
+    keywords %>%
+      filter(keyword == w) %>%
+      group_by(id) %>%
+      count %>%
+      nrow
+  })
+}
+
+
+cloud_keywords <- keywords %>%
+  group_by(keyword) %>%
+  summarise(n = n())%>%
+  arrange(desc(n)) %>%
+  head(no_top_keywords) %>%
+  mutate(n_papers = countPapersUsingKeyword(keyword)) %>%
+  arrange(desc(n), desc(n_papers))
+
+```
+
+
+```{r}
+if (nrow(cloud_keywords) > 0) {  
+  plot.new()
+  wordcloud(cloud_keywords$keyword, cloud_keywords$n,
+            max.words = Inf,
+            random.order = FALSE,
+            scale = c(1.5,.2),
+            fixed.asp = TRUE,
+            rot.per = 0,
+            color = brewer.pal(8,"Dark2"))
+  #TODO: Save plot in a file
+} else {
+  warning("No input data for wordcloud.")
+}
+```
+
+
+
 ## Runtime environment description
 
 
