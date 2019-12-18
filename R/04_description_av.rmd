@@ -32,6 +32,56 @@ data_geo <- readRDS(file = here("data", "data_geo.rda"))
 
 ```
 
+```{r all_data, echo=FALSE}
+all_data <- 
+  papers2010_2019 %>%
+  inner_join(data_av1, by="id") %>%
+  inner_join(data_geo, by="id") %>%
+  select(id, year, av_application, av_name, av_place, av_status, av_arch, av_platform,
+         geo_goal, geo_sources, geo_tech, geo_inputmode, geo_outputmode, geo_standards, 
+         geo_process, geo_processtype) %>%
+  arrange(desc(year))
+
+  
+```
+
+
+```{r echo=FALSE}
+all_data %>%
+  select(ID = id,
+         `Año` = year,
+         `Aplicaciones` = av_application,
+         `Nombre AV` = av_name,
+         `Lugar`= av_place,
+         `Estado` = av_status,
+         `Arqui.` = av_arch,
+         `Plataform` = av_platform,
+         `[Geo] Propósito` = geo_goal,
+         `[Geo] Fuentes` = geo_sources,
+         `[Geo] Tecno` = geo_tech,
+         `[Geo] Entrada` =geo_inputmode,
+         `[Geo] Salida` = geo_outputmode,
+         `[Geo] Estandar?` = geo_standards,
+         `[Geo] Process?` = geo_process,
+         `[Geo] Tipo process` = geo_processtype) %>%
+  arrange(desc(`Año`)) %>%
+  datatable(rownames = FALSE,
+            filter = "top",
+            class = "table-bordered table-condensed hover",
+            extensions = c("Buttons"),
+            options = list(
+              pageLength = 10, #autoWidth = TRUE,
+              dom = 'Blfrtip',  # https://datatables.net/reference/option/dom
+              buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+            )
+  )
+```
+
+
+
+## Results
+
+
 ```{r echo=FALSE}
 papers <- 
   papers2010_2019 %>% 
@@ -44,7 +94,7 @@ n_papers <- nrow(papers)
 
 
 
-## Temporal distribution of virtual assistants according to _av_status_
+### Temporal distribution of virtual assistants according to _av_status_
 
 ```{r echo=FALSE}
 papers %>%
@@ -88,7 +138,7 @@ ggsave(here("figs", "fig03.png"))
 
 ```
 
-## Temporal distribution of virtual assistants considering _av_arch_ vs _av_status_
+### Temporal distribution of virtual assistants considering _av_arch_ vs _av_status_
 
 
 ```{r echo=FALSE}
@@ -118,7 +168,7 @@ ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
 ```
 
 
-## How many AV are named?
+### How many AV are named?
 
 ```{r echo=FALSE}
 names <- 
@@ -131,7 +181,7 @@ names <-
 
 Número de asistentes virtual con nombre `r  round(nrow(names)/n_papers*100,0)`%.
 
-## AV's application domains vs  _geo_goals_
+### AV's application domains vs  _geo_goals_
 
 ```{r data_geo, echo=FALSE}
 papers <- 
@@ -163,7 +213,7 @@ papers %>%
 ```
 
 
-## What is the most used platform in AV? Examine _av_platform_ vs _av_arch_...
+### What is the most used platform in AV? Examine _av_platform_ vs _av_arch_...
 
 ```{r platforms_data, echo=FALSE}
 
