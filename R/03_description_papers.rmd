@@ -243,14 +243,22 @@ _Word cloud of `r nrow(cloud_words)` top words in abstracts_
 ```{r echo=FALSE}
 
 if (nrow(cloud_words) > 0) {  
-  plot.new()
-  wordcloud(cloud_words$word, cloud_words$n,
-            max.words = Inf,
-            random.order = FALSE,
-            fixed.asp = FALSE,
-            rot.per = 0,
-            color = brewer.pal(8,"Dark2"))
-  #TODO: Save plot in a file
+  png(here("figs", "cloud_words_abstract.png"), width=1280,height=800)
+  wordcloud(cloud_words$word, cloud_words$n, 
+            scale=c(8,.2),
+            # min.freq=3,
+            max.words=Inf, 
+            random.order=FALSE, 
+            rot.per=.15, 
+            colors=brewer.pal(8,"Dark2"))
+  dev.off()
+  # plot.new()
+  # wordcloud(cloud_words$word, cloud_words$n,
+  #           max.words = Inf,
+  #           random.order = FALSE,
+  #           fixed.asp = FALSE,
+  #           rot.per = 0,
+  #           color = brewer.pal(8,"Dark2"))
 } else {
   warning("No input data for wordcloud.")
 }
@@ -259,7 +267,7 @@ if (nrow(cloud_words) > 0) {
 _Word cloud of keywords_
 
 
-```{r}
+```{r echo=FALSE}
 
 keywords <-
   select(papers, id, keyword=keywords) %>%
