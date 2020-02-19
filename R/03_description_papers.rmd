@@ -269,7 +269,6 @@ set.seed(1)
 cloud_words %>%
   select(Word = word,
          Freq = n) %>%
-  filter(Freq >= 20)%>%
   arrange(desc(Freq)) %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
@@ -291,7 +290,7 @@ keywords <-
   mutate(keyword = stringr::str_to_lower(stringr::str_trim(keyword))) 
 
 no_top_keywords <- nrow(cloud_words) # Same number as the top words in abstract 
-no_top_keywords <- 32
+no_top_keywords <- 38
 
 countPapersUsingKeyword <- function(the_word) {
   sapply(the_word, function(w) {
@@ -315,22 +314,35 @@ cloud_keywords <- keywords %>%
 ```
 
 
-```{r}
+```{r fig_cloud_keywords, echo=FALSE}
 if (nrow(cloud_keywords) > 0) {  
-  plot.new()
-  wordcloud(cloud_keywords$keyword, cloud_keywords$n,
-            max.words = Inf,
-            random.order = FALSE,
-            scale = c(1.5,.2),
-            fixed.asp = TRUE,
-            rot.per = 0,
-            color = brewer.pal(8,"Dark2"))
-  #TODO: Save plot in a file
+    png(here("figs", "cloud_keywords.png"))#, width=1280,height=800)
+    wordcloud(cloud_keywords$keyword, cloud_keywords$n, 
+              scale=c(2,.2),
+              max.words=Inf, 
+              fixed.asp = TRUE,
+              random.order=FALSE, 
+              rot.per=0, 
+              colors=brewer.pal(8,"Dark2"))
+    #TODO: DOES NOT PRODUCE FIGURE!!!!
+    dev.off()
+  
+  # plot.new()
+  # wordcloud(cloud_keywords$keyword, cloud_keywords$n,
+  #           max.words = Inf,
+  #           random.order = FALSE,
+  #           scale = c(1.5,.2),
+  #           fixed.asp = TRUE,
+  #           rot.per = 0,
+  #           color = brewer.pal(8,"Dark2"))
+
 } else {
   warning("No input data for wordcloud.")
 }
 ```
-
+```{r table_cloud_keywords, echo=FALSE}
+##TODO: freq table for cloud keywords
+```
 
 
 ## Runtime environment description
