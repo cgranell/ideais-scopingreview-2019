@@ -7,7 +7,7 @@ library(tidyverse)
 library(googledrive)
 
 # Retrieve bibtext file from the shared folder 'Documentos' in GDrive
-bib_file_name <- "IDEAIS_4.5-6_scopus-N=30.bib"
+bib_file_name <- "IDEAIS_4.5-6_alldatabases.bib"
 gdata_url <- "https://drive.google.com/open?id=1fWTRpM1fkVMnDFiVrwtIbjuuzYQ3yh5a"
 gdata_path <- drive_get(as_id(gdata_url))
 
@@ -16,7 +16,6 @@ gdata_file <- drive_ls(path = gdata_path$name, pattern = bib_file_name)
 data_path <- here::here("data-raw", gdata_file$name) # local file
 drive_download(file = as_id(gdata_file$id), path = data_path, overwrite = TRUE, verbose = TRUE)
 drive_deauth()
-
 
 papers_raw <- RefManageR::ReadBib(data_path, check = "warn", .Encoding = "UTF-8") %>%
   as.data.frame() %>% as_tibble()
