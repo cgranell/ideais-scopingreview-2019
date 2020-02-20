@@ -28,7 +28,7 @@ papers_raw <- rownames_to_column(papers_raw, "bibtextId")
 # NOTE: Bibtex field 'notes' is the filename of the paper.
 papers2010_2019 <-
   papers_raw %>%
-  select(type = bibtype, title, abstract, year, keywords, filename=notes) %>%
+  select(type = bibtype, title, abstract, year, keywords, journal, booktitle, filename=notes) %>%
   mutate(id = stringr::str_sub(filename, 1, 3),
          year = as.integer(year),
          title = stringr::str_replace_all(title, "[\"|{|}]", "")) %>%
