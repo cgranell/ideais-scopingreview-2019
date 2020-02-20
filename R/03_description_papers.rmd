@@ -41,9 +41,7 @@ There are `r n_papers ` references.
 ```{r echo=FALSE}
 
 papers %>%
-  mutate(type = ifelse(type=="Book", "Conference paper", type),
-         type = ifelse(type=="InProceedings", "Conference paper", type),
-         type = ifelse(type=="Article", "Journal paper", type)) %>%
+  mutate(type = ifelse(type=="InProceedings", "Conference paper", "Journal paper")) %>%
   group_by(type) %>% 
   summarise(n = n()) %>%
   mutate(proportion  = n / n_papers, 
@@ -95,6 +93,24 @@ papers %>%
 ggsave(here("figs", "fig02.png"))
 
 ```
+
+## Top source journals
+
+```{r top_journals, echo=FALSE}
+# TODO: Finish table and recreate cloud words
+papers %>%
+  mutate(source = ifelse(!is.na(journal), journal, booktitle),
+         type = ifelse(type=="InProceedings", "Conferences", "Journals")) %>%
+  arrange(type, year, source) %>%
+  select(`Type`=type, 
+         `Year`= year, 
+         `Source` = source) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE, width=600) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) 
+  # collapse_rows(1:2, valign = "top")
+
+```
+
 
 
 ## Terms frequency analysis 
@@ -183,7 +199,7 @@ non_stop_words_per_abstract$id <-
 
 non_stop_words_per_abstract %>%
   slice(1:10) %>%
-  knitr::kable(caption = "Top10 resúmenes por # de palabras significativas después de suprimir stopwords.",
+  knitr::kable(caption = "Top10 abstracts ordered by number of significative words after removal stopwords.",
                format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
@@ -199,7 +215,7 @@ non_stop_words_per_abstract %>%
 ```
 
 
-## Word Cloud 
+## Word Clouds 
 
 
 ```{r top_words, echo=FALSE}
