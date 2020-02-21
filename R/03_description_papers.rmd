@@ -204,17 +204,6 @@ non_stop_words_per_abstract %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-```{r echo=FALSE}
-# ggplot(non_stop_words_per_abstract, aes(id, num_words, fill=year)) + 
-#   geom_col(show.legend = FALSE) +
-#   labs(x = NULL, y = "# de palabras", title="Resúmenes por año y por # de palabras significativas") +
-#   facet_wrap(~year, ncol = 2, scales = "free")+
-#   coord_flip() 
-
-
-```
-
-
 ## Word Clouds 
 
 
@@ -252,7 +241,7 @@ top_words %>%
 ```{r echo=FALSE}
 set.seed(1)
 
-minimum_occurence <- 10
+minimum_occurence <- 5
 
 cloud_words <- non_stop_words %>%
   group_by(word) %>%
@@ -285,6 +274,7 @@ if (nrow(cloud_words) > 0) {
 set.seed(1)
 
 cloud_words %>%
+  slice(1:15) %>%
   select(Word = word,
          Freq = n) %>%
   arrange(desc(Freq)) %>%
