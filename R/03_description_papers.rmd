@@ -94,17 +94,20 @@ ggsave(here("figs", "fig02.png"))
 
 ```
 
-## Top source journals
+## Conferences and journals
 
 ```{r top_journals, echo=FALSE}
 # TODO: Finish table and recreate cloud words
 papers %>%
   mutate(source = ifelse(!is.na(journal), journal, booktitle),
          type = ifelse(type=="InProceedings", "Conferences", "Journals")) %>%
+  group_by(type, source, year) %>%
+  summarise(n = n()) %>%
   arrange(type, year, source) %>%
   select(`Type`=type, 
          `Year`= year, 
-         `Source` = source) %>%
+         `Source` = source,
+         `#`=n) %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE, width=600) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) 
   # collapse_rows(1:2, valign = "top")
