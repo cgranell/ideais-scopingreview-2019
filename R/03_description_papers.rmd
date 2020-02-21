@@ -298,7 +298,7 @@ keywords <-
   mutate(keyword = stringr::str_to_lower(stringr::str_trim(keyword))) 
 
 no_top_keywords <- nrow(cloud_words) # Same number as the top words in abstract 
-no_top_keywords <- 38
+no_top_keywords <- 40
 
 countPapersUsingKeyword <- function(the_word) {
   sapply(the_word, function(w) {
@@ -316,7 +316,8 @@ cloud_keywords <- keywords %>%
   summarise(n = n())%>%
   arrange(desc(n)) %>%
   head(no_top_keywords) %>%
-  mutate(n_papers = countPapersUsingKeyword(keyword)) %>%
+  mutate(n_papers = countPapersUsingKeyword(keyword),
+         n = n * 10) %>%
   arrange(desc(n), desc(n_papers))
 
 ```
@@ -326,11 +327,11 @@ cloud_keywords <- keywords %>%
 if (nrow(cloud_keywords) > 0) {  
     png(here("figs", "cloud_keywords.png"))#, width=1280,height=800)
     wordcloud(cloud_keywords$keyword, cloud_keywords$n, 
-              scale=c(2,.2),
+              scale=c(5,.2),
               max.words=Inf, 
               fixed.asp = TRUE,
               random.order=FALSE, 
-              rot.per=0, 
+              rot.per=0.25, 
               colors=brewer.pal(8,"Dark2"))
     #TODO: DOES NOT PRODUCE FIGURE!!!!
     dev.off()
