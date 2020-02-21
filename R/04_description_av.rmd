@@ -111,6 +111,18 @@ papers %>%
 
 ```
 
+
+_What AVs do they reach the status of operational implementation?_
+```{r av_status, echo=FALSE }
+# W
+papers %>%
+  filter(av_status=="IMPLEMENTACION-OPERATIVO") %>%
+  select(id, av_name)
+
+```
+
+
+
 ```{r echo=FALSE}
 papers %>%
   group_by(year, av_status) %>% 
@@ -152,12 +164,12 @@ papers %>%
   geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE) +
   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
   scale_size_area(max_size=12) +
-  labs(title="Distribución temporal de los estudios \nsegún la aproximación técnica",
-       x="Año", 
-       y="Aproximación técnica") +
+  labs(#title="Temporal distribution of studies \naccording to technical approach",
+       x="Year", 
+       y="Technical approach") +
   # Which legend to show
   guides(color="legend",size = "none", label="none") +
-  guides(color=guide_legend(title="Estado desarrollo", nrow=4))+ 
+  guides(color=guide_legend(title="Development status", nrow=4))+ 
   theme_minimal() + 
   theme(panel.grid.minor = element_blank()) +
   theme(panel.background = element_blank()) +
