@@ -37,8 +37,8 @@ all_data <-
   papers2010_2019 %>%
   inner_join(data_av1, by="id") %>%
   inner_join(data_geo, by="id") %>%
-  select(id, year, av_application, av_name, av_place, av_status, av_arch, av_platform,
-         geo_goal, geo_sources, geo_tech, geo_inputmode, geo_outputmode, geo_standards, 
+  select(id, year, av_app_norm, av_application, av_name, av_place, av_status, av_arch, av_platform,
+         geo_goal_norm, geo_goal, geo_sources, geo_tech, geo_inputmode, geo_outputmode, geo_standards, 
          geo_process, geo_processtype) %>%
   arrange(desc(year))
 
@@ -188,6 +188,7 @@ names <-
   select(av_name, year, av_application) %>%
   filter(!is.na(av_name))
 
+cat(nrow(names))
 
 ```
 
@@ -209,6 +210,8 @@ n_papers <- length(unique(papers$id))
 papers %>%
   select(ID = id,
          `Año` = year,
+         `App domain`= av_app_norm,
+         `Geo goal`= geo_goal_norm,
          `Aplicaciones` = av_application,
          `Propósito geo` = geo_goal ) %>%
   arrange(desc(`Año`)) %>%

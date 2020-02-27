@@ -32,9 +32,24 @@ data_raw$id <- stringr::str_pad(data_raw$id, 3, pad = "0")
 
 # Select the most relevant colums now, drop the others
 sel_cols <- c("id", 
-              "av_aplicacion", "av_estado", "av_nombre", "av_lugar", "av_arquitectura", "av_plataforma", "av_areas_investigacion",
-              "geo_propósito", "geo_fuentes", "geo_tecnología", "geo_entrada", "geo_salida", "geo_estándares", 
-              "geo_procesamiento", "geo_procesamiento_tipo", "procesamientonogeo",
+              "av_aplicacion_norm",
+              "av_aplicacion", 
+              "av_estado", 
+              "av_nombre", 
+              "av_lugar", 
+              "av_arquitectura", 
+              "av_plataforma", 
+              "av_areas_investigacion",
+              "geo_propósito_norm", 
+              "geo_propósito", 
+              "geo_fuentes", 
+              "geo_tecnología", 
+              "geo_entrada", 
+              "geo_salida", 
+              "geo_estándares", 
+              "geo_procesamiento", 
+              "geo_procesamiento_tipo", 
+              "procesamientonogeo",
               "notas")
 
 # av_: groups variables related to 'virtual assisstats'
@@ -43,6 +58,7 @@ dataitems2010_2019 <-
   data_raw  %>%
   select(sel_cols) %>%
   rename(id = id,
+         av_app_norm = av_aplicacion_norm,
          av_application = av_aplicacion,
          av_status = av_estado,
          av_name = av_nombre,
@@ -50,6 +66,7 @@ dataitems2010_2019 <-
          av_arch = av_arquitectura,
          av_platform = av_plataforma,
          av_researchareas = av_areas_investigacion,
+         geo_goal_norm = `geo_propósito_norm`,
          geo_goal = `geo_propósito`,
          geo_sources = geo_fuentes,
          geo_tech = `geo_tecnología`,
@@ -66,12 +83,13 @@ dataitems2010_2019 <-
 # Tidy up "av" variables
 data_av1 <- 
   dataitems2010_2019 %>%
-  select(id, av_name, av_place, av_application, av_status, av_arch, av_platform)
+  select(id, av_name, av_place, av_app_norm, av_application, av_status, av_arch, av_platform)
 
 sel_cols_av <- c("av_application", "av_status", "av_arch", "av_platform")
 data_av1[sel_cols_av] <- lapply(data_av1[sel_cols_av], FUN = function(x) stringr::str_to_upper(x))
 data_av1$av_status <- factor(data_av1$av_status) 
 data_av1$av_arch <- factor(data_av1$av_arch)
+data_av1$av_app_norm <- factor(data_av1$av_app_norm)
 
 data_av2 <- 
   dataitems2010_2019 %>%
@@ -96,6 +114,7 @@ data_geo[sel_cols_geo] <- lapply(data_geo[sel_cols_geo], FUN = function(x) strin
 
 data_geo$geo_standards <- factor(data_geo$geo_standards)
 data_geo$geo_process <- factor(stringr::str_to_upper(data_geo$geo_process))
+data_geo$geo_goal_norm <- factor(data_geo$geo_goal_norm)
 
 
 # data_path <- here::here("data", "data_av1.csv")
