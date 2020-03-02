@@ -183,12 +183,12 @@ ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
 ### How many AV are named?
 
 ```{r echo=FALSE}
-names <- 
+named <- 
   papers %>%
-  select(av_name, year, av_application) %>%
+  select(id, av_name, year, av_app_norm, av_application) %>%
   filter(!is.na(av_name))
 
-cat(nrow(names))
+cat(nrow(named))
 
 ```
 
@@ -198,10 +198,7 @@ Número de asistentes virtual con nombre `r  round(nrow(names)/n_papers*100,0)`%
 
 ```{r data_geo, echo=FALSE}
 papers <- 
-  papers2010_2019 %>% 
-  inner_join(data_av1, by="id") %>%
-  inner_join(data_geo, by="id") %>%
-  arrange(id)
+  all_data
 
 n_papers <- length(unique(papers$id))
 ```
@@ -226,6 +223,15 @@ papers %>%
             )
   )
 ```
+
+
+```{r echo=FALSE}
+table(papers$av_app_norm)
+
+```
+
+
+
 
 
 ### What is the most used platform in AV? Examine _av_platform_ vs _av_arch_...
