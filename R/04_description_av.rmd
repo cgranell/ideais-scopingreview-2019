@@ -93,6 +93,10 @@ n_papers <- nrow(papers)
 ```
 
 
+### Input/output mode
+
+
+
 
 ### Temporal distribution of virtual assistants according to _av_status_
 
