@@ -86,7 +86,7 @@ data_av1 <-
   select(id, av_name, av_place, av_app_norm, av_application, av_status, av_arch, av_platform)
 
 sel_cols_av <- c("av_application", "av_status", "av_arch", "av_platform")
-data_av1[sel_cols_av] <- lapply(data_av1[sel_cols_av], FUN = function(x) stringr::str_to_upper(x))
+data_av1[sel_cols_av] <- lapply(data_av1[sel_cols_av], FUN = function(x) stringr::str_to_sentence(x))
 data_av1$av_status <- factor(data_av1$av_status) 
 data_av1$av_arch <- factor(data_av1$av_arch)
 data_av1$av_app_norm <- factor(data_av1$av_app_norm)
@@ -97,7 +97,7 @@ data_av2 <-
 
 data_av2 <- separate_rows(data_av2, av_researchareas, sep="AND")
 data_av2$av_researchareas <- stringr::str_trim(data_av2$av_researchareas)
-data_av2$av_researchareas <- stringr::str_to_upper(data_av2$av_researchareas)
+data_av2$av_researchareas <- stringr::str_to_sentence(data_av2$av_researchareas)
 data_av2$av_researchareas <- factor(data_av2$av_researchareas)
 
 
