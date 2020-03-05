@@ -107,7 +107,7 @@ papers %>%
   mutate(proportion  = n / n_papers, 
          proportion_lbl = paste0(round(proportion*100,0), "%")) %>%
   arrange(n) %>%
-  select(`Estado de desarrollo AV` = av_status,
+  select(`Development stage of virtual assisstants` = av_status,
          `N` = n,
          `%`= proportion_lbl) %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
@@ -120,7 +120,7 @@ _What AVs do they reach the status of operational implementation?_
 ```{r av_status, echo=FALSE }
 # W
 papers %>%
-  filter(av_status=="IMPLEMENTACION-OPERATIVO") %>%
+  filter(av_status=="Implementation") %>%
   select(id, av_name)
 
 ```
@@ -172,8 +172,8 @@ papers %>%
        x="Year", 
        y="Technical approach") +
   # Which legend to show
-  guides(color="legend",size = "none", label="none") +
-  guides(color=guide_legend(title="Development status", nrow=4))+ 
+  guides(color="legend", size = "none") +
+  guides(color=guide_legend(title="Development status", nrow=2))+ 
   theme_minimal() + 
   theme(panel.grid.minor = element_blank()) +
   theme(panel.background = element_blank()) +
@@ -196,26 +196,53 @@ cat(nrow(named))
 
 ```
 
-Número de asistentes virtual con nombre `r  round(nrow(names)/n_papers*100,0)`%.
+Number of named smart digital assisstants `r  round(nrow(names)/n_papers*100,0)`%.
 
-### AV's application domains vs  _geo_goals_
+### Table of all articles where categories of _application domains_ vs  _geo_goals_ are grouped, together with descriptions and research lines.
 
 ```{r data_geo, echo=FALSE}
-papers <- 
-  all_data
+app_domains = c("Disaster management", 
+                "Education", 
+                "Education; Entertaintment", 
+                "Healthcare",
+                "Recommendation", 
+                "Tourism", 
+                "Tourism; Cultural heritage", 
+                "Tourism; Entertaintment")
+others = c("Conversation", 
+           "Linguistic", 
+           "Navigation")
 
-n_papers <- length(unique(papers$id))
+table_researchareas <-
+  data_av2 %>%
+  group_by(id) %>% arrange(av_researchareas) %>%
+  summarise(av_areas  = paste(stringr::str_to_sentence(av_researchareas), collapse =", ")) %>%
+  arrange(id)
+
+  
+table_papers <- 
+  papers2010_2019 %>%
+  inner_join(data_av1, by="id") %>%
+  inner_join(data_geo, by="id") %>%
+  inner_join(table_researchareas, by="id") %>%
+  select(av_app_norm, geo_goal_norm, year, id, av_application, geo_goal, av_areas) %>%
+  mutate(ref = paste0("[", id, "] ", year),
+         group = ifelse(av_app_norm %in% app_domains, 1, 2)) %>%
+  arrange(group, av_app_norm, year)
+
+
+n_papers <- length(unique(table_papers$id))
 ```
 
 ```{r echo=FALSE}
-papers %>%
-  select(ID = id,
-         `Año` = year,
+table_papers  %>%
+  select(`G`= group,
          `App domain`= av_app_norm,
          `Geo goal`= geo_goal_norm,
-         `Aplicaciones` = av_application,
-         `Propósito geo` = geo_goal ) %>%
-  arrange(desc(`Año`)) %>%
+         `Ref - Year` = ref,
+         `App desc` = av_application,
+         `Geo desc` = geo_goal,
+         `Research areas`= av_areas) %>%
   datatable(rownames = FALSE,
             filter = "top",
             class = "table-bordered table-condensed hover",
@@ -226,14 +253,20 @@ papers %>%
               buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
             )
   )
+
+
+table_papers  %>%
+  select(`G`= group,
+         `App domain`= av_app_norm,
+         `Geo goal`= geo_goal_norm,
+         `Ref - Year` = ref,
+         `App desc` = av_application,
+         `Geo desc` = geo_goal,
+         `Research areas`= av_areas) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  collapse_rows(columns = 1:2, valign = "top")
 ```
-
-
-```{r echo=FALSE}
-table(papers$av_app_norm)
-
-```
-
 
 
 
