@@ -183,6 +183,18 @@ ggsave(here("figs", "fig05-bubbles.png"), width = 16, units = "cm")
 ```
 
 
+### types of platforms
+
+```{r}
+platforms <- 
+  papers %>%
+  select(av_platform) %>%
+  group_by(av_platform) %>%
+  summarise(n = n()) %>%
+  arrange(n)
+```
+
+
 ### How many AV are named?
 
 ```{r echo=FALSE}
