@@ -128,29 +128,29 @@ papers %>%
 
 
 ```{r echo=FALSE}
-papers %>%
-  group_by(year, av_status) %>% 
-  summarise(n = n()) %>%
-  mutate(total_year = sum(n),
-         proportion_year = n/total_year,
-         proportion_year_lbl = paste0(round(proportion_year*100,0), "%")) %>%
-  ggplot(aes(x=year, y=n, fill=av_status)) + 
-  geom_bar(stat="identity") +
-  geom_text(aes(label=proportion_year_lbl), size=2.7, position=position_stack(vjust = 0.5)) +
-  # stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
-  labs(title="Distribución temporal de los AV coloreados por 'av_status'",
-    x="", 
-    y="# de estudios") +
-  scale_y_continuous(breaks=seq(0,10,by=1)) +
-  scale_x_continuous(breaks = seq(2010,2020, by=1)) +
-  guides(fill=guide_legend(title="Estado desarrollo", nrow=4)) + # modify legend title
-  theme_minimal() + 
-  theme(panel.grid.minor = element_blank()) +
-  theme(panel.background = element_blank()) +
-  theme(legend.title = element_text(size=9),
-        legend.position = "bottom")
-
-ggsave(here("figs", "fig03.png"))
+# papers %>%
+#   group_by(year, av_status) %>% 
+#   summarise(n = n()) %>%
+#   mutate(total_year = sum(n),
+#          proportion_year = n/total_year,
+#          proportion_year_lbl = paste0(round(proportion_year*100,0), "%")) %>%
+#   ggplot(aes(x=year, y=n, fill=av_status)) + 
+#   geom_bar(stat="identity") +
+#   geom_text(aes(label=proportion_year_lbl), size=2.7, position=position_stack(vjust = 0.5)) +
+#   # stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
+#   labs(title="Distribución temporal de los AV coloreados por 'av_status'",
+#     x="", 
+#     y="# de estudios") +
+#   scale_y_continuous(breaks=seq(0,10,by=1)) +
+#   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
+#   guides(fill=guide_legend(title="Estado desarrollo", nrow=4)) + # modify legend title
+#   theme_minimal() + 
+#   theme(panel.grid.minor = element_blank()) +
+#   theme(panel.background = element_blank()) +
+#   theme(legend.title = element_text(size=9),
+#         legend.position = "bottom")
+# 
+# ggsave(here("figs", "fig03.png"))
 
 ```
 
@@ -158,12 +158,11 @@ ggsave(here("figs", "fig03.png"))
 
 
 ```{r echo=FALSE}
-
 papers %>%
   select(year, av_arch, av_status) %>%
   group_by(year, av_arch, av_status) %>%
   summarise(n = n()) %>%
-  ggplot(aes(x=year, y=av_arch, color=av_status)) +
+  ggplot(aes(x=year, y=av_arch, color=av_status, group=av_status)) +
   geom_point(aes(size=n*4),  alpha=.5, na.rm = TRUE) +
   geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE) +
   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
@@ -172,7 +171,7 @@ papers %>%
        x="Year", 
        y="Technical approach") +
   # Which legend to show
-  guides(color="legend", size = "none") +
+  guides(color="legend", size = "none", label= "none") +
   guides(color=guide_legend(title="Development status", nrow=2))+ 
   theme_minimal() + 
   theme(panel.grid.minor = element_blank()) +
@@ -180,7 +179,7 @@ papers %>%
   theme(legend.title = element_text(size=9),
         legend.position = "bottom")
 
-ggsave(here("figs", "fig04.png"), width = 16, units = "cm")
+ggsave(here("figs", "fig05-bubbles.png"), width = 16, units = "cm")
 ```
 
 
