@@ -97,7 +97,6 @@ ggsave(here("figs", "fig02.png"))
 ## Conferences and journals
 
 ```{r top_journals, echo=FALSE}
-# TODO: Finish table and recreate cloud words
 papers %>%
   mutate(source = ifelse(!is.na(journal), journal, booktitle),
          type = ifelse(type=="InProceedings", "Conferences", "Journals")) %>%
@@ -257,9 +256,9 @@ _Word cloud of `r nrow(cloud_words)` top words in abstracts_
 
 
 ```{r fig_cloud_words_abstract, echo=FALSE}
-set.seed(1)
+
 if (nrow(cloud_words) > 0) {  
-  png(here("figs", "cloud_words_abstract.png"), width=1280,height=800)
+  png(here("figs", "fig03_cloud_words_abstract.png"), width=1280,height=800)
   wordcloud(cloud_words$word, cloud_words$n, 
             scale=c(10,.5),
             max.words=Inf, 
@@ -328,7 +327,7 @@ cloud_keywords <- keywords %>%
 
 ```{r fig_cloud_keywords, echo=FALSE}
 if (nrow(cloud_keywords) > 0) {  
-    png(here("figs", "cloud_keywords.png"))#, width=1280,height=800)
+    png(here("figs", "fig04_cloud_keywords.png"))#, width=1280,height=800)
     wordcloud(cloud_keywords$keyword, cloud_keywords$n, 
               scale=c(5,.2),
               max.words=Inf, 
