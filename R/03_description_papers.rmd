@@ -94,14 +94,23 @@ papers %>%
 
 ```{r fig2, echo=FALSE}
 
+totals_per_year <-
+  papers %>%
+  group_by(year) %>%
+  summarise(total = n()) %>%
+  complete(year = 2010:2020, fill = list(total = 0))
+
+
 papers %>%
   group_by(type, year) %>% 
   summarise(n = n()) %>%
   complete(type, year = 2010:2020, fill = list(n = 0)) %>%
+  left_join(totals_per_year, by="year") %>%
   ggplot(aes(x=year, y=n)) +
   geom_area(aes(fill=type), alpha=0.3, position = position_dodge(width = 0)) +
   geom_line(aes(color=type), size=1) +
   geom_point(aes(color=type), size=1.5) +
+  geom_line(aes(y=total), color="black", linetype ="dashed",  size=0.5) +
   labs(#title="Temporal distribution of eligible papers", 
     x="Year", 
     y="Number of papers", 
