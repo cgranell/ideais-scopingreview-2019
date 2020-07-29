@@ -1,6 +1,6 @@
 ---
-title: 'IDEAIS: Analisis de las documentos elegibles de la sintesis'
-author: "Carlos Granell, Paola Pesántez et al."
+title: 'Text analysis of the eligible papers included in the scoping review'
+author: "Carlos Granell"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -10,6 +10,14 @@ output:
     toc: yes
 urlcolor: blue
 ---
+
+
+```{r setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+This document is an exploratory analysis of the eligible papers, a collaborative research activity as part of the [IDEAIS project](https://sites.google.com/view/redideais).
+
 
 ## Required libraries
 
@@ -21,27 +29,55 @@ library(stringr)
 library(kableExtra)
 library(wordcloud)
 
-```
+library(quanteda)
 
+# for deterministic cloud rendering
+set.seed(nchar("IDEAIS - scoping review paper"))
+
+```
 
 ## Data 
 
 ```{r data_source, echo=FALSE}
-papers <- readRDS(file = here("data", "papers2010_2019.rda"))
+file_name <- "papers2010_2019"
+
+papers <- readRDS(file = here("data", paste0(file_name, ".rda")))
+
+papers <- 
+  papers %>%
+  mutate(type = ifelse(type=="InProceedings", "Conference paper", "Journal paper"))
 
 n_papers <- nrow(papers)
 ```
 
-There are `r n_papers ` references.
+In total, `r n_papers` were eligible (N=`r n_papers`). Some of the eligibible papers may not be openly available due to access restriction imposed by publishers. Therefore, the content of the papers is not provided in this repository. We indeed include the bibliographic information of each paper in the file `r file_name`, in the directory `data`.
 
 
+## Table 1. Conferences and journals
 
-## Distribution of studies: journal vs conference
+Table 1 (Conferences and journals) was manualy created based on the tables below. The first table shows the conferences/journals per year. The second table shows the percentage distribution of conference papers and journal articles. 
 
-```{r echo=FALSE}
+
+```{r tbl1_years, echo=FALSE}
+papers %>%
+  mutate(source = ifelse(!is.na(journal), journal, booktitle)) %>%
+  group_by(type, source, year) %>%
+  summarise(n = n()) %>%
+  arrange(type, year, source) %>%
+  select(`Type`=type, 
+         `Year`= year, 
+         `Source` = source,
+         `#`=n) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE, width=600) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>% 
+  collapse_rows(1:2, valign = "top")
+
+```
+
+
+```{r tbl1_distribution, echo=FALSE}
 
 papers %>%
-  mutate(type = ifelse(type=="InProceedings", "Conference paper", "Journal paper")) %>%
   group_by(type) %>% 
   summarise(n = n()) %>%
   mutate(proportion  = n / n_papers, 
@@ -54,65 +90,38 @@ papers %>%
 
 ```
 
-## Temporal distribution of studies 
+## Figure 2. Temporal distribution of eligibible papers 
 
-```{r echo=FALSE}
-# In case a year has no studies, add that year to the series. 
-# Input parameter 'n': number of studies for a missed year
-add_missing_years <- function(n) {
-  years_papers <- unique(papers$year)
-  years_gap <- setdiff(seq(2010,2020,by=1), years_papers)
-  years_tibble <- tibble(year = integer(), n = integer())
-  if (length(years_gap) > 0) {
-    for (year in years_gap) {
-      years_tibble <- add_row(years_tibble, year=year, n=n)
-    }
-  }
-  return(years_tibble);
-}
+```{r fig2, echo=FALSE}
 
 papers %>%
-  group_by(year) %>% 
+  group_by(type, year) %>% 
   summarise(n = n()) %>%
-  bind_rows(add_missing_years(0)) %>%
-  arrange(year) %>%
+  complete(type, year = 2010:2020, fill = list(n = 0)) %>%
   ggplot(aes(x=year, y=n)) +
-  geom_line(size=1.5, alpha=.4) +
-  labs(#title="Temporal distribution of papers", 
+  geom_area(aes(fill=type), alpha=0.3, position = position_dodge(width = 0)) +
+  geom_line(aes(color=type), size=1) +
+  geom_point(aes(color=type), size=1.5) +
+  labs(#title="Temporal distribution of eligible papers", 
     x="Year", 
-    y="Number of papers") +
-    #caption="Fuente: autores") +
+    y="Number of papers", 
+    fill = "Publication type") +
+    #caption="Source: authors") +
+  scale_fill_manual(values=c("#999999", "#E69F00")) +
+  scale_colour_manual(values=c("#999999", "#E69F00")) +
   scale_y_continuous(breaks=seq(0,15,by=1)) +
   scale_x_continuous(breaks=seq(2010,2020,by=1)) +
+  guides(color = FALSE) +
+  theme(legend.position = "bottom") +
   theme_minimal() +
   theme(panel.grid.minor = element_blank()) +
-  theme(panel.background = element_blank()) +
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.background = element_blank())
+  # theme(panel.grid.major.x = element_blank())
 
 
 ggsave(here("figs", "fig02.png"))
 
 ```
-
-## Conferences and journals
-
-```{r top_journals, echo=FALSE}
-papers %>%
-  mutate(source = ifelse(!is.na(journal), journal, booktitle),
-         type = ifelse(type=="InProceedings", "Conferences", "Journals")) %>%
-  group_by(type, source, year) %>%
-  summarise(n = n()) %>%
-  arrange(type, year, source) %>%
-  select(`Type`=type, 
-         `Year`= year, 
-         `Source` = source,
-         `#`=n) %>%
-  knitr::kable(format="html", escape = T, booktabs = TRUE, width=600) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) 
-  # collapse_rows(1:2, valign = "top")
-
-```
-
 
 
 ## Terms frequency analysis 
