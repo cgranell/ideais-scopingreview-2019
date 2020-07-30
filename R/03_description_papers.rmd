@@ -247,8 +247,8 @@ non_stop_words_per_year %>%
 
 ```{r params, include=FALSE}
 # chosen manually
-minimum_occurence <- 50
-max_words <- 50
+minimum_occurence <- 5
+max_words <- 100
 ```
 
 The following table shows the number of occurrences of the `r max_words` most frequent wordstems in all abstracts.
@@ -297,52 +297,131 @@ top_wordstems %>%
   kableExtra::scroll_box(height = "300px")
 ```
 
-The following clouds and tables are based on word stems extracted with a stemming algorithm from package [`quanteda`](https://cran.r-project.org/package=quanteda).
+The following cloud and table are based on word stems extracted with a stemming algorithm from package [`quanteda`](https://cran.r-project.org/package=quanteda).
 Words must occur at least `r minimum_occurence` times to be included in the cloud.
 Each cloud has a maximum of `r max_words` words.
 
-```{r echo=FALSE}
-set.seed(1)
 
-minimum_occurence <- 5
 
-cloud_words <- non_stop_words %>%
-  group_by(word) %>%
-  tally %>%
-  filter(n >= minimum_occurence) %>% 
+```{r cloud_wordstems, echo=FALSE}
+cloud_wordstems <- wordstems %>%
+  # group_by(year, wordstem) %>%
+  group_by(wordstem) %>%
+  tally() %>%
   arrange(desc(n))
 ```
 
-_Word cloud of `r nrow(cloud_words)` top words in abstracts_ 
 
+```{r cloud_wordstems_create_plot, eval=FALSE, echo=FALSE}
+# FIXME: when running this as part of "Knit", then there is an error; interactively works though
+# Quitting from lines 234-255 (giscience-historic-text-analysis.Rmd) 
+# Error in strwidth(words[i], cex = size[i], ...) : invalid 'cex' value
+# Tried:
+# - https://stackoverflow.com/questions/12400305/wordcloud-package-get-error-in-strwidth-invalid-cex-value
+# - https://stackoverflow.com/questions/20343941/wordcloud-package-get-error-in-strwidth-invalid-cex-value
+# - https://stackoverflow.com/questions/28763389/how-does-the-removesparseterms-in-r-work
+png(filename = here::here("figs", "fig03_cloud_wordstems_abstract.png"), 
+    width=1280,
+    height=800)
 
-```{r fig_cloud_words_abstract, echo=FALSE}
+# par(mfrow = c(1,2))
 
-if (nrow(cloud_words) > 0) {  
-  png(here("figs", "fig03_cloud_words_abstract.png"), width=1280,height=800)
-  wordcloud(cloud_words$word, cloud_words$n, 
-            scale=c(10,.5),
-            max.words=Inf, 
-            random.order=FALSE, 
-            rot.per=.15, 
-            colors=brewer.pal(8,"Dark2"))
-  dev.off()
+# Divide the device into one row and two columns
+# Column 2 is 1/3 the width of the column 1
+layout(matrix(c(1,2), 1, 2, byrow = TRUE), widths=c(2,1))
+# for (the_year in c(2010, 2011, 2012, 2013, 2015, 2016, 2017, 2018, 2019)) {
+  year_cloud_wordstems <- cloud_wordstems %>%
+    # dplyr::filter(year == the_year) %>%
+    dplyr::filter(n >= minimum_occurence) %>%
+    head(n = max_words)
+
+  wordcloud::wordcloud(words = year_cloud_wordstems$wordstem,
+                       freq = year_cloud_wordstems$n,
+                       min.freq = 1,
+                       max.words=Inf, 
+                       random.order = FALSE,
+                       fixed.asp = FALSE,
+                       rot.per = 0,
+                       scale=c(10,.5),
+                       color = brewer.pal(8, "Dark2"))
+# }
   
-} else {
-  warning("No input data for wordcloud.")
-}
+  
+  barplot(cloud_wordstems[1:15,]$n, las = 2, names.arg = cloud_wordstems[1:15,]$wordstem,
+        ylim=range(pretty(c(0, cloud_wordstems[1:15,]$n))),
+        col = c("#666666", "#666666", "#666666", 
+                "#66A61E", "#66A61E", "#66A61E",
+                "#E7298A", "#E7298A", "#E7298A", "#E7298A", "#E7298A", "#E7298A",
+                "#7570B3", "#7570B3", "#7570B3"),
+        main ="Top 15 most frequent wordstems",
+        ylab = "Wordstem frequencies")
+  
+dev.off()
 ```
 
-```{r table_cloud_words_abstract, echo=FALSE }
-set.seed(1)
+```{r cloud_wordstems_include_plot, echo=FALSE, dpi=72}
+knitr::include_graphics(here::here("figs", "fig03_cloud_wordstems_abstract.png"))
+```
 
-cloud_words %>%
+
+```{r cloud_wordstems_table, echo=FALSE}
+
+cloud_wordstems %>%
   slice(1:15) %>%
-  select(Word = word,
+  select(WordStem= wordstem,
          Freq = n) %>%
   arrange(desc(Freq)) %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+
+```
+
+
+
+
+
+```{r echo=FALSE}
+# set.seed(1)
+# 
+# minimum_occurence <- 5
+# 
+# cloud_words <- non_stop_words %>%
+#   group_by(word) %>%
+#   tally %>%
+#   filter(n >= minimum_occurence) %>% 
+#   arrange(desc(n))
+```
+
+
+
+```{r fig_cloud_words_abstract, echo=FALSE}
+
+# if (nrow(cloud_words) > 0) {  
+#   png(here("figs", "fig03_cloud_words_abstract.png"), width=1280,height=800)
+#   wordcloud(cloud_words$word, cloud_words$n, 
+#             scale=c(10,.5),
+#             max.words=Inf, 
+#             random.order=FALSE, 
+#             rot.per=.15, 
+#             colors=brewer.pal(8,"Dark2"))
+#   dev.off()
+#   
+# } else {
+#   warning("No input data for wordcloud.")
+# }
+```
+
+```{r table_cloud_words_abstract, echo=FALSE }
+# set.seed(1)
+# 
+# cloud_words %>%
+#   slice(1:15) %>%
+#   select(Word = word,
+#          Freq = n) %>%
+#   arrange(desc(Freq)) %>%
+#   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+#   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 
 ```
