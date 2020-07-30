@@ -247,8 +247,8 @@ non_stop_words_per_year %>%
 
 ```{r params, include=FALSE}
 # chosen manually
-minimum_occurence <- 99
-max_words <- 100
+minimum_occurence <- 50
+max_words <- 50
 ```
 
 The following table shows the number of occurrences of the `r max_words` most frequent wordstems in all abstracts.
@@ -269,10 +269,10 @@ countYearsUsingWordstem <- function(the_word) {
   })
 }
 
-countPapersUsingWord <- function(the_word) {
+countPapersUsingWordstem <- function(the_word) {
   sapply(the_word, function(w) {
-    non_stop_words %>%
-      filter(word == w) %>%
+    wordstems %>%
+      filter(wordstem == w) %>%
       group_by(id) %>%
       count %>%
       nrow
@@ -280,26 +280,26 @@ countPapersUsingWord <- function(the_word) {
 }
 
 
-
-# top words
-no_top_words <- 40  # Arbitrary  
-top_words <- non_stop_words %>%
-  group_by(word) %>%
-  tally %>%
+top_wordstems <- 
+  wordstems %>%
+  group_by(wordstem) %>%
+  tally() %>%
   arrange(desc(n)) %>%
-  head(no_top_words) %>%
-  mutate(n_abstracts = countPapersUsingWord(word))
+  head(n = max_words) %>%
+  mutate(`# abstracts / wordstem` = countPapersUsingWordstem(wordstem)) %>%
+  tibble::add_column(place = c(1:nrow(.)), .before = 0)
 
-top_words %>%
-  select(Palabra = word,
-         Repeticiones = n,
-         `# resúmenes` = n_abstracts) %>%
-  arrange(desc(Repeticiones), desc(`# resúmenes`)) %>%
-  knitr::kable(caption = paste0("Ranking de los ", no_top_words," términos más repetidos\n (si igual # repeticiones, ordenados por mayor # de resumenes)"),
-               format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+write.csv(top_wordstems, here::here("results", "text_analysis_topwordstems.csv"), row.names = FALSE)
+
+top_wordstems %>%
+  knitr::kable(caption = "Most frequent wordstems.") %>%
+  kableExtra::kable_styling("striped", full_width = FALSE) %>%
+  kableExtra::scroll_box(height = "300px")
 ```
 
+The following clouds and tables are based on word stems extracted with a stemming algorithm from package [`quanteda`](https://cran.r-project.org/package=quanteda).
+Words must occur at least `r minimum_occurence` times to be included in the cloud.
+Each cloud has a maximum of `r max_words` words.
 
 ```{r echo=FALSE}
 set.seed(1)
