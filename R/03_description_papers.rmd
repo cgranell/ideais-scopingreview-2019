@@ -220,7 +220,8 @@ non_stop_words_per_abstract %>%
   rename(`# non-stop words` = num_words) %>%
   knitr::kable(caption = "Abstracts ordered by number of words after removal of stopwords.",
                format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kableExtra::scroll_box(height = "300px")
 ```
 
 _How many non-stop words does each year have?_
@@ -238,7 +239,8 @@ non_stop_words_per_year %>%
   rename(`# non-stop words` = num_words_year) %>%
   knitr::kable(caption = "Total number of words after removal of stopwords per year.",
                format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  kableExtra::scroll_box(height = "300px")
 ```
 
 
@@ -251,7 +253,7 @@ minimum_occurence <- 5
 max_words <- 100
 ```
 
-The following table shows the number of occurrences of the `r max_words` most frequent wordstems in all abstracts.
+The following table are based on word stems extracted with a stemming algorithm from package [`quanteda`](https://cran.r-project.org/package=quanteda). It shows shows the number of occurrences of the `r max_words` most frequent wordstems in all abstracts.
 
 ```{r top_wordstem, echo=FALSE}
 
@@ -297,19 +299,24 @@ top_wordstems %>%
   kableExtra::scroll_box(height = "300px")
 ```
 
-The following cloud and table are based on word stems extracted with a stemming algorithm from package [`quanteda`](https://cran.r-project.org/package=quanteda).
-Words must occur at least `r minimum_occurence` times to be included in the cloud.
-Each cloud has a maximum of `r max_words` words.
+
+```{r cloud_wordstems_table, echo=FALSE, eval=FALSE}
+
+top_wordstems %>%
+  slice(1:15) %>%
+  select(Wordstem= wordstem,
+         Freq = n) %>%
+  arrange(desc(Freq)) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 
 
-
-```{r cloud_wordstems, echo=FALSE}
-cloud_wordstems <- wordstems %>%
-  # group_by(year, wordstem) %>%
-  group_by(wordstem) %>%
-  tally() %>%
-  arrange(desc(n))
 ```
+
+
+### Figure 3. Word cloud of the most frequent word sterms + frequency bar chart  
+
+Left side of the figure shows a cloud which includes word stems that occur at least `r minimum_occurence` times. The cloud has a maximum of `r max_words` words. Right side shows a frequency bar chart of the top 15 word stems. Colours are in sync in both charts. 
 
 
 ```{r cloud_wordstems_create_plot, eval=FALSE, echo=FALSE}
@@ -364,22 +371,6 @@ knitr::include_graphics(here::here("figs", "fig03_cloud_wordstems_abstract.png")
 ```
 
 
-```{r cloud_wordstems_table, echo=FALSE}
-
-cloud_wordstems %>%
-  slice(1:15) %>%
-  select(WordStem= wordstem,
-         Freq = n) %>%
-  arrange(desc(Freq)) %>%
-  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-
-
-```
-
-
-
-
 
 ```{r echo=FALSE}
 # set.seed(1)
@@ -427,11 +418,7 @@ cloud_wordstems %>%
 ```
 
 
-
-_Word cloud of keywords_
-
-
-```{r echo=FALSE}
+```{r echo=FALSE, eval=FALSE}
 
 keywords <-
   select(papers, id, keyword=keywords) %>%
@@ -465,7 +452,7 @@ cloud_keywords <- keywords %>%
 ```
 
 
-```{r fig_cloud_keywords, echo=FALSE}
+```{r fig_cloud_keywords, echo=FALSE, eval=FALSE}
 if (nrow(cloud_keywords) > 0) {  
     png(here("figs", "fig04_cloud_keywords.png"))#, width=1280,height=800)
     wordcloud(cloud_keywords$keyword, cloud_keywords$n, 
