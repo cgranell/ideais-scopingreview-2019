@@ -29,7 +29,7 @@ library(stringr)
 library(kableExtra)
 library(wordcloud)
 
-library(quanteda)
+# library(quanteda)
 
 # for deterministic cloud rendering
 set.seed(nchar("IDEAIS - scoping review paper"))
@@ -135,20 +135,23 @@ ggsave(here("figs", "fig02.png"))
 
 ## Terms frequency analysis 
 
+
 As part of the text analysis of papers, including wordcloud and terms frequency analysis,
-read the full list of abstracts from the `papers` and process them to
-create a [tidy](https://www.jstatsoft.org/article/view/v059i10) data structure without
-[stop words](https://en.wikipedia.org/wiki/Stop_words).
-Reference book to text mining in tidy format: [Text Mining with R](https://www.tidytextmining.com/)
+we read the full list of abstracts from the `papers` and process them to create a [tidy](https://www.jstatsoft.org/article/view/v059i10) data structure without
+[stop words](https://en.wikipedia.org/wiki/Stop_words). The stop words include specific words, such as `paper` and `authors`, which are included in many abstract, abbreviations such as `e.g.`, and terms particular to scientific articles, such as `summary`. Also all numeric literas are removed from the word list. Reference book to text mining in tidy format: [Text Mining with R](https://www.tidytextmining.com/)
+
 
 ```{r stopwords_abstract, echo=FALSE}
-tidy_abstracts <- papers %>%
-  select(id, abstract) %>%
+tidy_abstracts <- 
+  papers %>%
+  select(id, year, abstract) %>%
   arrange(id)
   
-papers_words <- tidy_abstracts %>%
-    select(id, abstract) %>%
-    unnest_tokens(word, abstract)
+# create a table of all words
+papers_words <- 
+  tidy_abstracts %>%
+  select(id, year, abstract) %>%
+  unnest_tokens(word, abstract)
 
 my_stop_words <- tibble(
   word = c(
@@ -206,25 +209,41 @@ About `r round(after_cleanup/total_words * 100)` % (`r after_cleanup`) of the to
 _How many non-stop words does each abstract have?_
 
 ```{r non_stopwords_abstract, echo=FALSE}
-non_stop_words_per_abstract <- non_stop_words %>%
-  group_by(id) %>%
+non_stop_words_per_abstract <- 
+  non_stop_words %>%
+  group_by(id, year) %>%
   summarise(num_words = n()) %>%
-  left_join(papers, by=c("id")) %>%
-  select(id, num_words, year) %>%
   arrange(desc(num_words))
 
-non_stop_words_per_abstract$id <- 
-  factor(non_stop_words_per_abstract$id,
-         levels = non_stop_words_per_abstract$id[order(non_stop_words_per_abstract$num_words)])
 
 non_stop_words_per_abstract %>%
-  slice(1:10) %>%
-  knitr::kable(caption = "Top10 abstracts ordered by number of significative words after removal stopwords.",
+  rename(`# non-stop words` = num_words) %>%
+  knitr::kable(caption = "Abstracts ordered by number of words after removal of stopwords.",
                format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
 ```
 
-## Word Clouds 
+_How many non-stop words does each year have?_
+
+
+```{r non_stopwords_year, echo=FALSE}
+
+non_stop_words_per_year <- 
+  non_stop_words_per_abstract %>% 
+  group_by(year) %>%
+  summarise(num_words_year = sum(num_words)) %>%
+  arrange(desc(num_words_year))
+
+non_stop_words_per_year %>%
+  rename(`# non-stop words` = num_words_year) %>%
+  knitr::kable(caption = "Total number of words after removal of stopwords per year.",
+               format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
+
+
+
+## Top wordstems and wordstem clouds 
 
 
 ```{r top_words, echo=FALSE}
