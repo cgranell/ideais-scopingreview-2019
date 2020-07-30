@@ -29,7 +29,7 @@ library(stringr)
 library(kableExtra)
 library(wordcloud)
 
-# library(quanteda)
+library(quanteda)
 
 # for deterministic cloud rendering
 set.seed(nchar("IDEAIS - scoping review paper"))
@@ -245,8 +245,30 @@ non_stop_words_per_year %>%
 
 ## Top wordstems and wordstem clouds 
 
+```{r params, include=FALSE}
+# chosen manually
+minimum_occurence <- 99
+max_words <- 100
+```
 
-```{r top_words, echo=FALSE}
+The following table shows the number of occurrences of the `r max_words` most frequent wordstems in all abstracts.
+
+```{r top_wordstem, echo=FALSE}
+
+wordstems <- non_stop_words %>%
+  mutate(wordstem = quanteda::char_wordstem(non_stop_words$word))
+
+
+countYearsUsingWordstem <- function(the_word) {
+  sapply(the_word, function(w) {
+    wordstems %>%
+      filter(wordstem == w) %>%
+      group_by(year) %>%
+      count() %>%
+      nrow
+  })
+}
+
 countPapersUsingWord <- function(the_word) {
   sapply(the_word, function(w) {
     non_stop_words %>%
@@ -256,6 +278,8 @@ countPapersUsingWord <- function(the_word) {
       nrow
   })
 }
+
+
 
 # top words
 no_top_words <- 40  # Arbitrary  
