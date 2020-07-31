@@ -1,6 +1,6 @@
 ---
-title: 'IDEAIS: Análisis de las características de los asistentes virtuales'
-author: "Carlos Granell, Paola Pesántez et al."
+title: 'Analysis of the visual assisstants in the eligible papers'
+author: "Carlos Granell"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   html_document:
@@ -11,6 +11,14 @@ output:
 urlcolor: blue
 ---
 
+
+```{r setup, include=FALSE, eval=TRUE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+This document is an exploratory analysis of the virtual assisstants included in the eligible papers. It's part of a collaborative scoping review activity as part of the [IDEAIS project](https://sites.google.com/view/redideais).
+
+
 ## Required libraries
 
 ```{r load_libraries, echo=TRUE, message=FALSE, warning=FALSE}
@@ -20,11 +28,13 @@ library(kableExtra)
 library(DT)
 library(ggrepel)
 
+# just in case
+set.seed(nchar("IDEAIS - scoping review paper"))
 ```
 
 ## Data 
 
-```{r load_data, echo=FALSE}
+```{r load_data}
 papers2010_2019 <- readRDS(file = here("data", "papers2010_2019.rda"))
 data_av1 <- readRDS(file = here("data", "data_av1.rda"))
 data_av2 <- readRDS(file = here("data", "data_av2.rda"))
@@ -32,39 +42,37 @@ data_geo <- readRDS(file = here("data", "data_geo.rda"))
 
 ```
 
-```{r all_data, echo=FALSE}
+```{r all_data_join}
 all_data <- 
   papers2010_2019 %>%
   inner_join(data_av1, by="id") %>%
   inner_join(data_geo, by="id") %>%
   select(id, year, av_app_norm, av_application, av_name, av_place, av_status, av_arch, av_platform,
          geo_goal_norm, geo_goal, geo_sources, geo_tech, geo_inputmode, geo_outputmode, geo_standards, 
-         geo_process, geo_processtype) %>%
-  arrange(desc(year))
+         geo_process, geo_processtype)
 
-  
 ```
 
 
-```{r echo=FALSE}
+```{r all_data_table}
 all_data %>%
   select(ID = id,
-         `Año` = year,
-         `Aplicaciones` = av_application,
-         `Nombre AV` = av_name,
-         `Lugar`= av_place,
-         `Estado` = av_status,
-         `Arqui.` = av_arch,
-         `Plataform` = av_platform,
-         `[Geo] Propósito` = geo_goal,
-         `[Geo] Fuentes` = geo_sources,
-         `[Geo] Tecno` = geo_tech,
-         `[Geo] Entrada` =geo_inputmode,
-         `[Geo] Salida` = geo_outputmode,
-         `[Geo] Estandar?` = geo_standards,
+         Year = year,
+         `[AV] Application` = av_application,
+         `[AV] Name` = av_name,
+         `[AV] Place`= av_place,
+         `[AV] Dev. status` = av_status,
+         `[AV] Arch.` = av_arch,
+         `[AV] Platform` = av_platform,
+         `[Geo] Goal` = geo_goal,
+         `[Geo] Sources` = geo_sources,
+         `[Geo] Tech` = geo_tech,
+         `[Geo] Input` =geo_inputmode,
+         `[Geo] Output` = geo_outputmode,
+         `[Geo] Standards?` = geo_standards,
          `[Geo] Process?` = geo_process,
-         `[Geo] Tipo process` = geo_processtype) %>%
-  arrange(desc(`Año`)) %>%
+         `[Geo] Process type` = geo_processtype) %>%
+  arrange(desc(Year)) %>%
   datatable(rownames = FALSE,
             filter = "top",
             class = "table-bordered table-condensed hover",
@@ -79,10 +87,10 @@ all_data %>%
 
 
 
-## Results
+## Results on the characteristics of the virtual assistants
 
 
-```{r echo=FALSE}
+```{r av_stats}
 papers <- 
   papers2010_2019 %>% 
   inner_join(data_av1, by="id") %>%
