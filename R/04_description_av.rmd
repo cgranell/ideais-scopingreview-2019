@@ -28,6 +28,8 @@ library(kableExtra)
 library(DT)
 library(ggrepel)
 
+library(ggforce) # for sankey diagram
+
 # just in case
 set.seed(nchar("IDEAIS - scoping review paper"))
 ```
@@ -39,6 +41,25 @@ papers2010_2019 <- readRDS(file = here("data", "papers2010_2019.rda"))
 data_av1 <- readRDS(file = here("data", "data_av1.rda"))
 data_av2 <- readRDS(file = here("data", "data_av2.rda"))
 data_geo <- readRDS(file = here("data", "data_geo.rda"))
+
+
+
+cols(
+  group = col_character(),
+  domain = col_character(),
+  geo = col_character(),
+  desc = col_character()
+) -> export_cols
+
+
+read_csv2(
+  file = here::here("data", "data_sankey.csv"), 
+  col_types = export_cols
+) %>% 
+  select(group, domain, geo) %>%
+  group_by(group, domain, geo) %>%
+  summarise(freq = n()) -> sankey 
+
 
 ```
 
@@ -101,8 +122,19 @@ n_papers <- nrow(papers)
 ```
 
 
-### Input/output mode
 
+### Parallel set diagram
+
+```{r parallel_set_plot, fig.height=12, fig.width=12}
+
+gather_set_data(sankey, 1:3) %>% 
+  ggplot(aes(x, id = id, split = y, value = freq)) +
+  geom_parallel_sets(aes(fill = group), alpha = 0.3, axis.width = 0.2) +
+  geom_parallel_sets_axes(axis.width = 0.2) +
+  geom_parallel_sets_labels(colour = "white", angle = 360, size = 2) +
+  theme_bw()
+
+```
 
 
 
