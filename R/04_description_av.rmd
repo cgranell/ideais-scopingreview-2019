@@ -119,7 +119,7 @@ all_data %>%
 # Source: https://rviews.rstudio.com/2019/09/19/intro-to-ggforce/
 # Source: https://cran.r-project.org/web/packages/ggforce/ggforce.pdf
 sankey %>%
-  rename(`Application domain` = domain,
+  rename(`Application domain/\nFeature or aspect` = domain,
          `Geospatial usage` = geo,
          `Group` = group) %>%
   gather_set_data(1:3) %>% 
