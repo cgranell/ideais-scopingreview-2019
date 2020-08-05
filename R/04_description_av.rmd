@@ -136,7 +136,7 @@ sankey %>%
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
   
 
-ggsave(here("figs", "fig04_parallelset.png"))
+ggsave(here("figs", "fig04_parallelsets.png"))
 
 ```
 
