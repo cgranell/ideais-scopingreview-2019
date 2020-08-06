@@ -142,7 +142,7 @@ ggsave(here("figs", "fig04_parallelsets.png"))
 
 ### Useful information/stats 
 
-Tables below show the numbers and percentages used in Section 3 of the document. They are not shown as tables per se but as pieces of information intertwined in the narrative 
+Tables below show the numbers and percentages used in Section 3 of the paper. They are not shown as tables per se but as pieces of information intertwined in the narrative. 
 
 ```{r av_stats}
 papers <- 
@@ -216,32 +216,62 @@ papers %>%
 
 ```
 
-### Figure 5. Temporal distribution of virtual assistants considering _av_arch_ vs _av_status_
+### Figure 5. Temporal distribution of virtual assistants according to their technical approach (`av_arch`) and development status (`av_status`)
 
 
-```{r echo=FALSE}
+```{r fig5, fig.height=6, fig.width=10}
 papers %>%
   select(year, av_arch, av_status) %>%
   group_by(year, av_arch, av_status) %>%
   summarise(n = n()) %>%
   ggplot(aes(x=year, y=av_arch, color=av_status, group=av_status)) +
   geom_point(aes(size=n*4),  alpha=.5, na.rm = TRUE) +
-  geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE) +
+  geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE, show.legend = FALSE) + # Don't display "a" in the legend.
   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
-  scale_size_area(max_size=12) +
-  labs(#title="Temporal distribution of studies \naccording to technical approach",
+  scale_size_area(max_size=15) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(#title="Temporal distribution of studies \naccording to technical approach and development status",
        x="Year", 
        y="Technical approach") +
   # Which legend to show
   guides(color="legend", size = "none", label= "none") +
-  guides(color=guide_legend(title="Development status", nrow=2))+ 
+  guides(color=guide_legend(title="Development status", nrow=1))+ 
   theme_minimal() + 
   theme(panel.grid.minor = element_blank()) +
   theme(panel.background = element_blank()) +
-  theme(legend.title = element_text(size=9),
+  theme(legend.title = element_text(size=10),
         legend.position = "bottom")
 
-ggsave(here("figs", "fig05-bubbles.png"), width = 16, units = "cm")
+ggsave(here("figs", "fig05-bubbles.png"))
+```
+
+
+
+
+
+```{r fig5_facet, fig.height=8, fig.width=12}
+papers %>%
+  select(year, av_arch, av_status) %>%
+  group_by(year, av_arch, av_status) %>%
+  summarise(n = n()) %>%
+  ggplot(aes(x=year, y=av_arch, color=av_status, group=av_status)) +
+  geom_point(aes(size=n*4),  alpha=.5, na.rm = TRUE) +
+  geom_text(aes(label=n), color="white", size=4, na.rm = TRUE) +
+  scale_x_continuous(breaks = seq(2010,2020, by=1)) +
+  scale_size_area(max_size=15) +
+  scale_color_brewer(palette = "Dark2") +
+  labs(#title="Temporal distribution of studies \naccording to technical approach and development status",
+       x="Year", 
+       y="Technical approach") +
+  facet_wrap(~av_status, ncol = 2, strip.position = "right") +
+  # Which legend to show
+  guides(color="none", size = "none") +
+  theme_bw() + 
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.background = element_blank()) +
+  theme(strip.text.y = element_text(size=10, face="bold"),
+        strip.background = element_rect(colour="lightgray", fill="gray90"))
+ggsave(here("figs", "fig05-bubbles_facet.png"))
 ```
 
 
@@ -271,7 +301,7 @@ cat(nrow(named))
 
 Number of named smart digital assisstants `r  round(nrow(names)/n_papers*100,0)`%.
 
-### Table of all articles where categories of _application domains_ vs  _geo_goals_ are grouped, together with descriptions and research lines.
+### Table 2. Summary of the virtual assisstants
 
 ```{r data_geo, echo=FALSE}
 app_domains = c("Disaster management", 
