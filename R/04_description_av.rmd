@@ -189,6 +189,50 @@ papers %>%
 
 
 
+_What are the most used platforms?_
+
+```{r platforms}
+platforms <- 
+  papers %>%
+  select(av_platform) %>%
+  group_by(av_platform) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+
+no_platforms <- nrow(platforms %>% filter(!is.na(av_platform)))
+
+platforms %>%
+  knitr::kable(caption = "Types of platforms",
+               format="html", escape = T, booktabs = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  kableExtra::scroll_box(height = "300px")
+```
+
+
+Out of `r n_papers`, the implementated platform is mentioned in `r no_platforms` studies, which is about `r round(no_platforms/n_papers*100, 0)`%.
+
+
+_How many virtual assisstants are named?_
+
+```{r named}
+named <- 
+  papers %>%
+  select(id, av_name, year, av_app_norm, av_application) %>%
+  filter(!is.na(av_name))
+
+  
+named %>%
+  knitr::kable(caption = "Named virtual assisstants",
+               format="html", escape = T, booktabs = TRUE) %>%
+  kableExtra::kable_styling(bootstrap_options = "striped", full_width = FALSE) %>%
+  kableExtra::scroll_box(height = "300px")
+```
+
+Number of named virtual assisstants `r round(nrow(named)/n_papers*100,0)`% (`r nrow(named)`/`r n_papers`)
+
+
+
 ```{r echo=FALSE}
 # papers %>%
 #   group_by(year, av_status) %>% 
@@ -219,7 +263,7 @@ papers %>%
 ### Figure 5. Temporal distribution of virtual assistants according to their technical approach (`av_arch`) and development status (`av_status`)
 
 
-```{r fig5, fig.height=6, fig.width=10}
+```{r fig5_old, fig.height=6, fig.width=10}
 papers %>%
   select(year, av_arch, av_status) %>%
   group_by(year, av_arch, av_status) %>%
@@ -247,8 +291,6 @@ ggsave(here("figs", "fig05-bubbles.png"))
 
 
 
-
-
 ```{r fig5_facet, fig.height=8, fig.width=12}
 papers %>%
   select(year, av_arch, av_status) %>%
@@ -271,39 +313,14 @@ papers %>%
   theme(panel.background = element_blank()) +
   theme(strip.text.y = element_text(size=10, face="bold"),
         strip.background = element_rect(colour="lightgray", fill="gray90"))
+
 ggsave(here("figs", "fig05-bubbles_facet.png"))
 ```
 
 
-### types of platforms
-
-```{r}
-platforms <- 
-  papers %>%
-  select(av_platform) %>%
-  group_by(av_platform) %>%
-  summarise(n = n()) %>%
-  arrange(n)
-```
-
-
-### How many AV are named?
-
-```{r echo=FALSE}
-named <- 
-  papers %>%
-  select(id, av_name, year, av_app_norm, av_application) %>%
-  filter(!is.na(av_name))
-
-cat(nrow(named))
-
-```
-
-Number of named smart digital assisstants `r  round(nrow(names)/n_papers*100,0)`%.
-
 ### Table 2. Summary of the virtual assisstants
 
-```{r data_geo, echo=FALSE}
+```{r all_table, echo=FALSE}
 app_domains = c("Disaster management", 
                 "Education", 
                 "Education; Entertaintment", 
@@ -372,32 +389,6 @@ table_papers  %>%
 ```
 
 
-
-
-### What is the most used platform in AV? Examine _av_platform_ vs _av_arch_...
-
-```{r platforms_data, echo=FALSE}
-
-platforms <- 
-  select(papers, id, year, av_platform, av_arch) %>%
-  filter(!is.na(av_platform))
-         
-no_platforms <- nrow(platforms)
-
-```
-
-Out of `r n_papers`, the implementated platform is mentioned in `r no_platforms`  studies, which is about `r round(no_platforms/n_papers*100, 0)`%.
-
-```{r platforms_table, echo=FALSE}
-platforms %>%
-  arrange(desc(year)) %>%
-  select(ID=id,
-         `Año`=year,
-         `Plataforma de implementación` = av_platform,
-         `Aproximación técnica` = av_arch) %>%
-  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
-```
 
 
 
