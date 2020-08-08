@@ -26,7 +26,7 @@ library(here)
 library(tidyverse)
 library(kableExtra)
 library(DT)
-library(ggrepel)
+# library(ggrepel)
 library(stringr)
 library(grid)
 library(gridExtra)
@@ -269,7 +269,7 @@ Number of named virtual assisstants `r round(nrow(named)/n_papers*100,0)`% (`r n
 ### Figure 5. Temporal distribution of virtual assistants according to their technical approach (`av_arch`) and development status (`av_status`)
 
 
-```{r fig5_old, fig.height=6, fig.width=10}
+```{r fig5_old, eval=FALSE, fig.height=6, fig.width=10}
 papers %>%
   select(year, av_arch, av_status) %>%
   group_by(year, av_arch, av_status) %>%
@@ -357,8 +357,6 @@ table_papers <-
          group = ifelse(av_app_norm %in% app_domains, 1, 2)) %>%
   arrange(group, av_app_norm, year)
 
-
-n_papers <- length(unique(table_papers$id))
 ```
 
 ```{r longtable_output}
@@ -392,7 +390,8 @@ table_papers  %>%
          `Research areas`= av_areas) %>%
   knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
-  collapse_rows(columns = 1:2, valign = "top")
+  kableExtra::collapse_rows(columns = 1:2, valign = "top") %>%
+  kableExtra::scroll_box(height = "300px")
 ```
 
 
@@ -431,7 +430,7 @@ ra_greater_one <-
   mutate(per = round(n / total*100,0))
 
 
-# Ordering data by place in decreasign order, to keep "Others" as the last colum
+# Ordering data by "place" in decreasing order, to keep "Others" the last bar
 ra_greater_one$av_areas <- 
   factor(ra_greater_one$av_areas, 
          levels = ra_greater_one$av_areas[order(ra_greater_one$place, decreasing = TRUE)])
@@ -440,60 +439,22 @@ ra_greater_one$av_areas <-
 ```
 
 
-
-```{r}
-
-
-ra_equal_one %>%
-  select(av_areas) %>%
-  rename(`Others: research areas cited once` = av_areas) %>%
-  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
-  kable_styling(bootstrap_options = c("striped"))
-
-```
-
-```{r research_areas_plot, fig.height=14, fig.width=12}
+```{r research_areas_plot, fig.height=8, fig.width=10}
 
 # Plot 1
-plt <- 
-  ra_greater_one %>%
+ra_greater_one %>%
   ggplot(aes(x = av_areas, y = per)) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = paste0(per, "%")), hjust = -.1, size=3) +
   labs(x = "Research areas", y = "Percentage") +
   coord_flip() +
+  gghighlight(av_areas == "Others") +
   theme_minimal() +
-  gghighlight(av_areas == "Others")
+  theme(panel.grid.minor.y = element_blank()) +
+  theme(panel.grid.major.y = element_blank())
+  
 
-#TODO: POner table en dos columnas. Ajustar formato. Src: https://cran.r-project.org/web/packages/gridExtra/vignettes/tableGrob.html
-tbl <- 
-    tableGrob(
-      ra_equal_one %>% 
-        select(av_areas) %>%
-        rename(`Others: research areas cited once` = av_areas), 
-      theme=ttheme_default())
-
-
-
-
-png(filename = here::here("figs", "fig06.png"), 
-    width=1280,
-    height=800)
-
-
-grid.arrange(plt, tbl,
-             nrow=1,
-             as.table=TRUE,
-             widths=c(2,1))
-
-# # Divide the device into one row and two columns
-# # Column 2 is 1/3 the width of the column 1
-# layout(matrix(c(1,2), 1, 2, byrow = TRUE), widths=c(2,1))
-
-
-dev.off()
-
-
+ggsave(filename = here::here("figs", "fig06.png"))
 ```
 
 
@@ -501,6 +462,19 @@ dev.off()
 knitr::include_graphics(here::here("figs", "fig06.png"))
 ```
 
+
+
+```{r researchareas_one_table}
+
+
+ra_equal_one %>%
+  select(av_areas) %>%
+  rename(`Others: research areas cited once` = av_areas) %>%
+  knitr::kable(format="html", escape = T, booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped")) %>%
+  kableExtra::scroll_box(height = "300px")
+
+```
 
 ## Runtime environment description
 
