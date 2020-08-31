@@ -12,7 +12,13 @@ This repository is archived on Zenodo:
 
 [![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.3901461.svg)](https://doi.org/10.5281/zenodo.3901461)
 
+
+Complementing the published article and this repo, the results of the analysis are made available as HTML pages, [here](https://rpubs.com/cgranell/reviewtgis01) and [here](https://rpubs.com/cgranell/reviewtgis02). 
+
+
 _This work has been partially supported by the CYTED program under the grant number 519RT0579 ["IDEAIS network" - Asistentes Inteligentes para las Infraestructuras de Datos Espaciales.](http://www.redideais.net/)_
+
+
 
 
 ## Files in this repository  
