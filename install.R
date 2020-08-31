@@ -11,7 +11,9 @@ install.packages("kableExtra")
 install.packages("wordcloud")
 install.packages("quanteda")
 
+install.packages("DT")
+install.packages("grid")
+install.packages("gridExtra")
+install.packages("ggforce") # for parallel sets diagram
+install.packages("gghighlight")
 
-install.packages("likert")
-install.packages("lubridate")
-install.packages("scales")

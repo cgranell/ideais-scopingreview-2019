@@ -1,6 +1,6 @@
 # A scoping review on the use, processing, and fusion of geographic data in virtual assistants
 
-Data and code script files for the paper __"A scoping review on the use, processing, and fusion of geographic data in virtual assistants"__, in response to the TGIS' special issue on {Special Issue: }Cyberinfrastructure and Intelligent Spatial Decision Support Systems](https://onlinelibrary.wiley.com/pb-assets/assets/14679671/CfP-%20Special%20Issue%20CyberInfrastructure-1573213752420.pdf)
+Data and code script files for the paper __"A scoping review on the use, processing, and fusion of geographic data in virtual assistants"__, in response to the TGIS' special issue on [Cyberinfrastructure and Intelligent Spatial Decision Support Systems](https://onlinelibrary.wiley.com/pb-assets/assets/14679671/CfP-%20Special%20Issue%20CyberInfrastructure-1573213752420.pdf)
 
 > Carlos Granell, Paola G. Pesántez-Cabrera, Luis M. Vilches-Blázquez, Rosario Achig, Miguel R. Luaces, Alejandro Cortiñas-Álvarez, Carolina Chayle, Villie Morocho-Zurita. 
 > A scoping review on the use, processing, and fusion of geographic data in virtual assistants. 

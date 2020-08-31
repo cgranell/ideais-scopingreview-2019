@@ -1,11 +1,22 @@
 ---
-title: 'Analysis of the visual assisstants in the eligible papers'
-author: "Carlos Granell"
+title: 'Analysis of the virtual assistants in the eligible papers included in the scoping review'
+author: 
+  - name: "Carlos Granell"
+    affiliation: Universitat Jaume I, Spain
 date: "`r format(Sys.time(), '%d %B, %Y')`"
+abstract: |
+  This analysis generates tables and figures related to the characteristics 
+  of the virtual assistants included in the eligible papers.
+  It is a collaborative research activity as part of the [IDEAIS project](http://www.redideais.net/).
+
 output:
   html_document:
     df_print: paged
     toc: yes
+    toc_float: true
+    toc_depth: 3
+    number_sections: true
+    theme: readable
   word_document:
     toc: yes
 urlcolor: blue
@@ -16,21 +27,17 @@ urlcolor: blue
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-This document is an exploratory analysis of the virtual assisstants included in the eligible papers. It's part of a collaborative scoping review activity as part of the [IDEAIS project](https://sites.google.com/view/redideais).
 
-
-## Required libraries
+# Required libraries
 
 ```{r load_libraries, echo=TRUE, message=FALSE, warning=FALSE}
 library(here)
 library(tidyverse)
 library(kableExtra)
 library(DT)
-# library(ggrepel)
 library(stringr)
 library(grid)
 library(gridExtra)
-
 
 library(ggforce) # for parallel sets diagram
 library(gghighlight)
@@ -39,14 +46,13 @@ library(gghighlight)
 set.seed(nchar("IDEAIS - scoping review paper"))
 ```
 
-## Data 
+# Data 
 
-```{r load_data}
+```{r load_data, warning=FALSE, comment=FALSE}
 papers2010_2019 <- readRDS(file = here("data", "papers2010_2019.rda"))
 data_av1 <- readRDS(file = here("data", "data_av1.rda"))
 data_av2 <- readRDS(file = here("data", "data_av2.rda"))
 data_geo <- readRDS(file = here("data", "data_geo.rda"))
-
 
 
 cols(
@@ -113,13 +119,13 @@ all_data %>%
 
 
 
-## Results on the characteristics of the virtual assistants
+# Analysis
 
+The following tables and figures are the results of the analysis of the characteristics of the virtual assistants.
 
+## Figure 4. Interaction between categorical variables (group, application domain and geospatial use) of virtual assistants
 
-### Figure 4. Interaction between categorical variables (group, application domain and geospatial use) of virtual assistants
-
-```{r parallel_set_plot, fig.height=10, fig.width=10}
+```{r parallel_set_plot, comment=FALSE, dpi=600, fig.height=14, fig.width=14}
 
 # Source: https://rviews.rstudio.com/2019/09/19/intro-to-ggforce/
 # Source: https://cran.r-project.org/web/packages/ggforce/ggforce.pdf
@@ -131,10 +137,8 @@ sankey %>%
   ggplot(aes(x, id = id, split = y, value = freq)) +
   geom_parallel_sets(aes(fill = Group), alpha = 0.3, axis.width = 0.2, show.legend = FALSE) +
   geom_parallel_sets_axes(axis.width = 0.3, color = "lightgrey", fill = "white") +
-  geom_parallel_sets_labels(colour = "black", angle = 0, size = 2) +
-  # scale_fill_brewer(palette = "Dark2") +
+  geom_parallel_sets_labels(colour = "black", angle = 0, size = 4) +
   scale_fill_manual(values=c("#E69F00", "#999999")) +
-  # scale_fill_viridis_d(option = "C") +
   theme_bw() +
   theme(panel.grid.minor = element_blank()) +
   theme(panel.grid.major = element_blank()) +
@@ -146,7 +150,7 @@ ggsave(here("figs", "fig04_parallelsets.png"))
 
 ```
 
-### Useful information/stats 
+## Useful information/stats 
 
 Tables below show the numbers and percentages used in Section 3 of the paper. They are not shown as tables per se but as pieces of information intertwined in the narrative. 
 
@@ -216,7 +220,7 @@ platforms %>%
 ```
 
 
-Out of `r n_papers`, the implementated platform is mentioned in `r no_platforms` studies, which is about `r round(no_platforms/n_papers*100, 0)`%.
+Out of `r n_papers` papers, the implementated platform is mentioned in `r no_platforms` studies, which is about `r round(no_platforms/n_papers*100, 0)`%.
 
 
 _How many virtual assisstants are named?_
@@ -238,66 +242,10 @@ named %>%
 Number of named virtual assisstants `r round(nrow(named)/n_papers*100,0)`% (`r nrow(named)`/`r n_papers`)
 
 
-
-```{r echo=FALSE}
-# papers %>%
-#   group_by(year, av_status) %>% 
-#   summarise(n = n()) %>%
-#   mutate(total_year = sum(n),
-#          proportion_year = n/total_year,
-#          proportion_year_lbl = paste0(round(proportion_year*100,0), "%")) %>%
-#   ggplot(aes(x=year, y=n, fill=av_status)) + 
-#   geom_bar(stat="identity") +
-#   geom_text(aes(label=proportion_year_lbl), size=2.7, position=position_stack(vjust = 0.5)) +
-#   # stat_summary(fun.y = sum, aes(label=..y.., group=year), geom = "text", vjust=-.2) +
-#   labs(title="Distribución temporal de los AV coloreados por 'av_status'",
-#     x="", 
-#     y="# de estudios") +
-#   scale_y_continuous(breaks=seq(0,10,by=1)) +
-#   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
-#   guides(fill=guide_legend(title="Estado desarrollo", nrow=4)) + # modify legend title
-#   theme_minimal() + 
-#   theme(panel.grid.minor = element_blank()) +
-#   theme(panel.background = element_blank()) +
-#   theme(legend.title = element_text(size=9),
-#         legend.position = "bottom")
-# 
-# ggsave(here("figs", "fig03.png"))
-
-```
-
-### Figure 5. Temporal distribution of virtual assistants according to their technical approach (`av_arch`) and development status (`av_status`)
+## Figure 5. Temporal distribution of virtual assistants according to their technical approach (`av_arch`) and development status (`av_status`)
 
 
-```{r fig5_old, eval=FALSE, fig.height=6, fig.width=10}
-papers %>%
-  select(year, av_arch, av_status) %>%
-  group_by(year, av_arch, av_status) %>%
-  summarise(n = n()) %>%
-  ggplot(aes(x=year, y=av_arch, color=av_status, group=av_status)) +
-  geom_point(aes(size=n*4),  alpha=.5, na.rm = TRUE) +
-  geom_label_repel(aes(label=n, color=av_status), size=2.5, na.rm = TRUE, show.legend = FALSE) + # Don't display "a" in the legend.
-  scale_x_continuous(breaks = seq(2010,2020, by=1)) +
-  scale_size_area(max_size=15) +
-  scale_color_brewer(palette = "Dark2") +
-  labs(#title="Temporal distribution of studies \naccording to technical approach and development status",
-       x="Year", 
-       y="Technical approach") +
-  # Which legend to show
-  guides(color="legend", size = "none", label= "none") +
-  guides(color=guide_legend(title="Development status", nrow=1))+ 
-  theme_minimal() + 
-  theme(panel.grid.minor = element_blank()) +
-  theme(panel.background = element_blank()) +
-  theme(legend.title = element_text(size=10),
-        legend.position = "bottom")
-
-ggsave(here("figs", "fig05-bubbles.png"))
-```
-
-
-
-```{r fig5_facet, fig.height=8, fig.width=12}
+```{r fig5_facet, warning=FALSE, comment=FALSE, dpi=600, fig.height=8, fig.width=12}
 papers %>%
   select(year, av_arch, av_status) %>%
   group_by(year, av_arch, av_status) %>%
@@ -308,9 +256,10 @@ papers %>%
   scale_x_continuous(breaks = seq(2010,2020, by=1)) +
   scale_size_area(max_size=15) +
   scale_color_brewer(palette = "Dark2") +
-  labs(#title="Temporal distribution of studies \naccording to technical approach and development status",
+  labs(title="Temporal distribution of studies \naccording to their technical approach and development status",
        x="Year", 
-       y="Technical approach") +
+       y="Technical approach",
+       caption="Source: authors") +
   facet_wrap(~av_status, ncol = 2, strip.position = "right") +
   # Which legend to show
   guides(color="none", size = "none") +
@@ -324,7 +273,7 @@ ggsave(here("figs", "fig05-bubbles_facet.png"))
 ```
 
 
-### Table 2. Summary of the virtual assisstants
+## Table 2. Summary of the virtual assisstants
 
 ```{r longtable_data}
 app_domains = c("Disaster management", 
@@ -396,9 +345,9 @@ table_papers  %>%
 
 
 
-### Figure 6. Most influential research areas found in the reviews papers
+## Figure 6. Most influential research areas found in the reviews papers
 
-```{r research_areas}
+```{r research_areas, warning=FALSE, comment=FALSE}
 researchareas <-
   table_researchareas %>%
   separate_rows(av_areas, sep = ",") %>%
@@ -439,14 +388,18 @@ ra_greater_one$av_areas <-
 ```
 
 
-```{r research_areas_plot, fig.height=8, fig.width=10}
+```{r research_areas_plot, comment=FALSE, warning=FALSE, dpi=600, fig.height=8, fig.width=10}
 
-# Plot 1
-ra_greater_one %>%
+plot <- 
+  ra_greater_one %>%
   ggplot(aes(x = av_areas, y = per)) + 
   geom_bar(stat = "identity") + 
   geom_text(aes(label = paste0(per, "%")), hjust = -.1, size=3) +
-  labs(x = "Research areas", y = "Percentage") +
+  labs(
+    title="Percentages of the research areas identified in the reviewed papers.",
+    x = "Research areas", 
+    y = "Percentage",
+    caption="Source: authors") +
   coord_flip() +
   gghighlight(av_areas == "Others") +
   theme_minimal() +
@@ -454,11 +407,11 @@ ra_greater_one %>%
   theme(panel.grid.major.y = element_blank())
   
 
-ggsave(filename = here::here("figs", "fig06.png"))
+ggsave(plot, filename = here::here("figs", "fig06.png"))
 ```
 
 
-```{r research_areas_include_plot, echo=FALSE, dpi=72}
+```{r research_areas_include_plot, dpi=72}
 knitr::include_graphics(here::here("figs", "fig06.png"))
 ```
 
@@ -476,7 +429,7 @@ ra_equal_one %>%
 
 ```
 
-## Runtime environment description
+# Runtime environment description
 
 
 ```{r session_info, echo=FALSE}
