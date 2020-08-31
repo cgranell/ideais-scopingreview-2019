@@ -10,9 +10,7 @@ Data and code script files for the paper __"A scoping review on the use, process
 
 This repository is archived on Zenodo:
 
-<!--
-[![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.3901461.svg)](https://doi.org/10.5281/zenodo.3901461)
--->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4009220.svg)](https://doi.org/10.5281/zenodo.4009220)
 
 Complementing the published article and this repo, the results of the analysis are made available as HTML pages, [here](https://rpubs.com/cgranell/reviewtgis01) and [here](https://rpubs.com/cgranell/reviewtgis02). 
 
