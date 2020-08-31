@@ -24,14 +24,22 @@ _This work has been partially supported by the CYTED program under the grant num
 
 Click the "Binder" button below to open the repo on [binder.org](https://mybinder.org/).
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cgranell/caee2020/master?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cgranell/ideais-scopingreview-2019/master?urlpath=rstudio)
 
-The reproduction on the published resutls depends on two script files: `R\03_description_paper.rmd` and `R\04_description_av.rmd`.
 
-In the RStudio page, open the fist file `R\03_description_paper.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which can be displayed in your browser. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
+The reproduction of the published results depends on two script files: `R\03_description_paper.rmd` and `R\04_description_av.rmd`.
 
-In the RStudio page, open the second file `R\04_description_av.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which can be displayed in your browser. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
+In the RStudio page, open the fist file `R\03_description_paper.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which will be automatically displayed in a browser pane. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
 
+In the RStudio page, open the second file `R\04_description_av.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which will be automatically displayed in a browser pane. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
+
+In case you want to run the other script files (`R/01_download.bibfile.r` and` R/02_download_datafile.r`), which is not strictly necessary since these scripts convert raw data to input data for later analysis, disable commented packages in `install .r` and install them.
+
+## Reproduce locally
+
+Open the two main analysis files (`R\03_description_paper.rmd` and `R\04_description_av.rmd`) with RStudio. Then selecl "Knit > Knit to HTML" to render the resutls of the analyses as HTML pages. If you have errors, try running block-by-block to locate the problem.
+
+The R script does not include code to install the required packages. Run `install.R` to install all dependencies in your local machine.
 
 ## Files in this repository  
 
