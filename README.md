@@ -20,6 +20,17 @@ Complementing the published article and this repo, the results of the analysis a
 _This work has been partially supported by the CYTED program under the grant number 519RT0579 ["IDEAIS network" - Asistentes Inteligentes para las Infraestructuras de Datos Espaciales.](http://www.redideais.net/)_
 
 
+## Reproduce Online
+
+Click the "Binder" button below to open the repo on [binder.org](https://mybinder.org/).
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/cgranell/caee2020/master?urlpath=rstudio)
+
+The reproduction on the published resutls depends on two script files: `R\03_description_paper.rmd` and `R\04_description_av.rmd`.
+
+In the RStudio page, open the fist file `R\03_description_paper.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which can be displayed in your browser. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
+
+In the RStudio page, open the second file `R\04_description_av.rmd`, and then select "Knit > Knit to HTML" to render the results of the analysis, which can be displayed in your browser. Alternatively, click on the file `03_description_papers.html` and select "View in Web Browser" to display it.  
 
 
 ## Files in this repository  
