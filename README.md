@@ -4,14 +4,15 @@ Data and code script files for the paper __"A scoping review on the use, process
 
 > Carlos Granell, Paola G. Pesántez-Cabrera, Luis M. Vilches-Blázquez, Rosario Achig, Miguel R. Luaces, Alejandro Cortiñas-Álvarez, Carolina Chayle, Villie Morocho-Zurita. 
 > A scoping review on the use, processing, and fusion of geographic data in virtual assistants. 
-> Submitted to Transaction in GIS.
+> Submitted to Transactions in GIS.
 > DOI: 
 
 
 This repository is archived on Zenodo:
 
+<!--
 [![DOI](https://www.zenodo.org/badge/DOI/10.5281/zenodo.3901461.svg)](https://doi.org/10.5281/zenodo.3901461)
-
+-->
 
 Complementing the published article and this repo, the results of the analysis are made available as HTML pages, [here](https://rpubs.com/cgranell/reviewtgis01) and [here](https://rpubs.com/cgranell/reviewtgis02). 
 
